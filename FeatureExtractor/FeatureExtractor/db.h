@@ -1,5 +1,5 @@
-#ifndef _DATA_H_
-#define _DATA_H_
+#ifndef _DB_H_
+#define _DB_H_
 
 #include <vector>
 #include <algorithm>
