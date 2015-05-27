@@ -8,3 +8,5 @@ FeatureExtractor/FeatureExtractor/Debug
 FeatureExtractor/FeatureExtractor/Release
 FeatureExtractor/Debug
 FeatureExtractor/Release
+*.sdf
+*.suo
