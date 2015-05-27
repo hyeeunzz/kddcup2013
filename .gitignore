@@ -1,0 +1,10 @@
+data/*.csv
+data/*.zip
+FeatureExtractor/FeatureExtractor/x64/Debug
+FeatureExtractor/FeatureExtractor/x64/Release
+FeatureExtractor/x64/Debug
+FeatureExtractor/x64/Release
+FeatureExtractor/FeatureExtractor/Debug
+FeatureExtractor/FeatureExtractor/Release
+FeatureExtractor/Debug
+FeatureExtractor/Release
