@@ -1,3 +1,6 @@
+#ifndef _DATA_H_
+#define _DATA_H_
+
 #include <vector>
 #include <algorithm>
 #include <ctime>
@@ -67,3 +70,5 @@ void parsePaperAuthor(DB *db);
 void parseConference(DB *db);
 void parseJournal(DB *db);
 DB *loadDB();
+
+#endif
