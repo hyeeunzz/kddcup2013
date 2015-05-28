@@ -10,3 +10,4 @@ FeatureExtractor/Debug
 FeatureExtractor/Release
 *.sdf
 *.suo
+*.opensdf

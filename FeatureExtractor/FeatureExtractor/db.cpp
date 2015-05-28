@@ -1,7 +1,5 @@
 #include "db.h"
 
-#define DATA_PATH "../../data"
-
 bool authorCompare(const Author *a, const Author *b) { return a->id < b->id; }
 bool paperCompare(const Paper *a, const Paper *b) { return a->id < b->id; }
 bool paperAuthorCompare(const PaperAuthor *a, const PaperAuthor *b) { return a->paper_id < b->paper_id; }
@@ -10,14 +8,14 @@ bool conferenceCompare(const Conference *a, const Conference *b) { return a->id 
 bool JournalCompare(const Journal *a, const Journal *b) { return a->id < b->id; }
 bool isPrintable(char c) { return c >= 32 && c <= 126; }
 
-FILE *getFile(char *filename)
+FILE *getFile(char *datapath, char *filename)
 {
 	fprintf(stderr, "parse%s... ", filename);
 	char buf[128];
 	errno_t err;
 
 	// {filename}.csv
-	sprintf_s(buf, "%s/%s.csv", DATA_PATH, filename);
+	sprintf_s(buf, "%s/%s.csv", datapath, filename);
 	FILE *fp;
 	if ((err = fopen_s(&fp, buf, "r")) != 0){
 		fprintf(stderr, "Error occured while loading %s.csv!\n", filename);
@@ -31,7 +29,7 @@ FILE *getFile(char *filename)
 void parseAuthor(DB *db)
 {
 	clock_t start_time = std::clock();
-	FILE *fp = getFile("Author");
+	FILE *fp = getFile(db->datapath, "Author");
 
 	while (!feof(fp)){
 		Author author;
@@ -83,7 +81,7 @@ void parseAuthor(DB *db)
 void parsePaper(DB *db)
 {
 	clock_t start_time = std::clock();
-	FILE *fp = getFile("Paper");
+	FILE *fp = getFile(db->datapath, "Paper");
 
 	while (!feof(fp)){
 		Paper paper;
@@ -153,7 +151,7 @@ void parsePaper(DB *db)
 void parsePaperAuthor(DB *db)
 {
 	clock_t start_time = std::clock();
-	FILE *fp = getFile("PaperAuthor");
+	FILE *fp = getFile(db->datapath, "PaperAuthor");
 
 	while (!feof(fp)){
 		PaperAuthor paper_author;
@@ -215,7 +213,7 @@ void parsePaperAuthor(DB *db)
 void parseConference(DB *db)
 {
 	clock_t start_time = std::clock();
-	FILE *fp = getFile("Conference");
+	FILE *fp = getFile(db->datapath, "Conference");
 
 	while (!feof(fp)){
 		Conference conference;
@@ -271,7 +269,7 @@ void parseConference(DB *db)
 void parseJournal(DB *db)
 {
 	clock_t start_time = std::clock();
-	FILE *fp = getFile("Journal");
+	FILE *fp = getFile(db->datapath, "Journal");
 
 	while (!feof(fp)){
 		Journal journal;
@@ -324,9 +322,11 @@ void parseJournal(DB *db)
 	fclose(fp);
 }
 
-DB *loadDB()
+DB *loadDB(char *datapath)
 {
 	DB *db = new DB();
+	strcpy_s(db->datapath, datapath);
+
 	parseConference(db);
 	parseJournal(db);
 	parseAuthor(db);
@@ -339,11 +339,11 @@ DB *loadDB()
 Author* DB::getAuthorById(int id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = authors.size() - 1;
+	int left = 0;
+	int right = authors.size() - 1;
 
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (authors[mid]->id == id){
 			return authors[mid];
 		}
@@ -360,11 +360,11 @@ Author* DB::getAuthorById(int id)
 Paper* DB::getPaperById(int id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = papers.size() - 1;
+	int left = 0;
+	int right = papers.size() - 1;
 
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (papers[mid]->id == id){
 			return papers[mid];
 		}
@@ -381,11 +381,11 @@ Paper* DB::getPaperById(int id)
 Conference* DB::getConferenceById(int id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = conferences.size() - 1;
+	int left = 0;
+	int right = conferences.size() - 1;
 
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (conferences[mid]->id == id){
 			return conferences[mid];
 		}
@@ -402,11 +402,11 @@ Conference* DB::getConferenceById(int id)
 Journal* DB::getJournalById(int id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = journals.size() - 1;
+	int left = 0;
+	int right = journals.size() - 1;
 
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (journals[mid]->id == id){
 			return journals[mid];
 		}
@@ -423,12 +423,12 @@ Journal* DB::getJournalById(int id)
 void DB::getPaperAuthorsByPaperId(std::vector<PaperAuthor*> &result, int paper_id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = paper_authors.size() - 1;
+	int left = 0;
+	int right = paper_authors.size() - 1;
 
-	size_t start;
+	int start = paper_authors.size();
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (paper_authors[mid]->paper_id == paper_id){
 			start = mid;
 			break;
@@ -452,12 +452,12 @@ void DB::getPaperAuthorsByPaperId(std::vector<PaperAuthor*> &result, int paper_i
 void DB::getPaperAuthorsByAuthorId(std::vector<PaperAuthor*> &result, int author_id)
 {
 	// do binary search
-	size_t left = 0;
-	size_t right = paper_author_index.size() - 1;
+	int left = 0;
+	int right = paper_author_index.size() - 1;
 
-	size_t start;
+	int start = paper_author_index.size();
 	while (left <= right){
-		size_t mid = (left + right) / 2;
+		int mid = (left + right) / 2;
 		if (paper_author_index[mid]->author_id == author_id){
 			start = mid;
 			break;
@@ -479,3 +479,14 @@ void DB::getPaperAuthorsByAuthorId(std::vector<PaperAuthor*> &result, int author
 	std::sort(result.begin(), result.end(), paperAuthorCompare);
 }
 
+void DB::getPaperAuthorsById(std::vector<PaperAuthor*> &result, int paper_id, int author_id)
+{
+	result.clear();
+	std::vector<PaperAuthor*> author_papers;
+	getPaperAuthorsByPaperId(author_papers, paper_id);
+	for (size_t i = 0; i < author_papers.size(); i++){
+		if (author_papers[i]->author_id == author_id){
+			result.push_back(author_papers[i]);
+		}
+	}
+}

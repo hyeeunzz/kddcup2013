@@ -147,11 +147,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="data.cpp" />
+    <ClCompile Include="db.cpp" />
+    <ClCompile Include="feature.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="data.h" />
+    <ClInclude Include="db.h" />
+    <ClInclude Include="feature.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

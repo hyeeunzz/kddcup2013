@@ -50,6 +50,7 @@ public:
 
 class DB {
 public:
+	char datapath[128];
 	std::vector<Author*> authors;
 	std::vector<Paper*> papers;
 	std::vector<PaperAuthor*> paper_authors;
@@ -62,13 +63,10 @@ public:
 	Journal* getJournalById(int id);
 	void getPaperAuthorsByPaperId(std::vector<PaperAuthor*> &result, int paper_id);
 	void getPaperAuthorsByAuthorId(std::vector<PaperAuthor*> &result, int author_id);
+	void getPaperAuthorsById(std::vector<PaperAuthor*> &result, int paper_id, int author_id);
 };
 
-void parseAuthor(DB *db);
-void parsePaper(DB *db);
-void parsePaperAuthor(DB *db);
-void parseConference(DB *db);
-void parseJournal(DB *db);
-DB *loadDB();
+FILE *getFile(char *datapath, char *filename);
+DB *loadDB(char *datapath);
 
 #endif
