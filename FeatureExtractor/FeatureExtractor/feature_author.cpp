@@ -1,12 +1,5 @@
 #include "feature_author.h"
 
-void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
-{
-	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
-}
-
 // Levenshtetin distance between author's affiliation and coauthor's affiliation
 Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id){
 	std::vector<PaperAuthor*> paper_authors;
@@ -96,4 +89,11 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 	else {
 		return MAGIC_NUMBER;
 	}
+}
+
+void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
+{
+	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
 }
