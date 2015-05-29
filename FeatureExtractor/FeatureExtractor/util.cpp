@@ -19,6 +19,10 @@ unsigned int levenshteinDistance(const std::string& s1, const std::string& s2)
 	return prevCol[len2];
 }
 
+void stringToLower(std::string& s){
+	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+}
+
 
 void generateSmallDomain(DB *db)
 {

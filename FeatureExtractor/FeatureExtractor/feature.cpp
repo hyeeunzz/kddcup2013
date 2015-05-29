@@ -9,7 +9,7 @@ Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author
 	std::vector<PaperAuthor*> paper_authors;
 	Author *author = db->getAuthorById(author_id);
 
-	double distance = 0.0;
+	std::vector<double> distances;
 	int count = 0;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 	for (size_t i = 0; i < paper_authors.size(); i++){
@@ -20,15 +20,15 @@ Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author
 		if (strlen(author->affiliation) > 0 && strlen(coauthor->affiliation) > 0) {
 			std::string author_affiliation(author->affiliation);
 			std::string coauthor_affiliation(coauthor->affiliation);
-			std::transform(author_affiliation.begin(), author_affiliation.end(), author_affiliation.begin(), ::tolower);
-			std::transform(coauthor_affiliation.begin(), coauthor_affiliation.end(), coauthor_affiliation.begin(), ::tolower);
-			distance += levenshteinDistance(author_affiliation, coauthor_affiliation);
+			stringToLower(author_affiliation);
+			stringToLower(coauthor_affiliation);
+			distances.push_back(levenshteinDistance(author_affiliation, coauthor_affiliation));
 			count++;
 		}
 	}
 
-	if (count > 0){
-		return distance / count;
+	if (count > 0) {
+		return *std::max_element(distances.begin(), distances.end());
 	}
 	else {
 		return MAGIC_NUMBER;
@@ -41,7 +41,7 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
 
-	double distance = 0.0;
+	std::vector<double> distances;
 	int count = 0;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 	for (size_t i = 0; i < paper_authors.size(); i++){
@@ -49,15 +49,15 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 		if (strlen(author->affiliation) > 0 && strlen(author2->affiliation) > 0) {
 			std::string author_affiliation(author->affiliation);
 			std::string author2_affiliation(author2->affiliation);
-			std::transform(author_affiliation.begin(), author_affiliation.end(), author_affiliation.begin(), ::tolower);
-			std::transform(author2_affiliation.begin(), author2_affiliation.end(), author2_affiliation.begin(), ::tolower);
-			distance += levenshteinDistance(author_affiliation, author2_affiliation);
+			stringToLower(author_affiliation);
+			stringToLower(author2_affiliation);
+			distances.push_back(levenshteinDistance(author_affiliation, author2_affiliation));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return distance / count;
+		return *std::max_element(distances.begin(), distances.end());
 	}
 	else {
 		return MAGIC_NUMBER;
@@ -70,7 +70,7 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
 
-	double distance = 0.0;
+	std::vector<double> distances;
 	int count = 0;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 	for (size_t i = 0; i < paper_authors.size(); i++){
@@ -78,27 +78,35 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 		if (strlen(author->affiliation) > 0 && strlen(author2->affiliation) > 0) {
 			std::string name(author->name);
 			std::string name2(author2->name);
-			std::transform(name.begin(), name.end(), name.begin(), ::tolower);
-			std::transform(name2.begin(), name2.end(), name2.begin(), ::tolower);
-			distance += levenshteinDistance(name, name2);
+			stringToLower(name);
+			stringToLower(name2);
+			distances.push_back(levenshteinDistance(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return distance / count;
+		return *std::max_element(distances.begin(), distances.end());
 	}
 	else {
 		return MAGIC_NUMBER;
 	}
 }
 
+Feature generatePaperAuthorCountFeature(DB *db, int author_id, int paper_id) {
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
+
+	return paper_authors.size();
+}
+
 FeatureList generateFeatures(DB *db, int author_id, int paper_id)
 {
 	FeatureList f;
 	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	// f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	//f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
 	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generatePaperAuthorCountFeature(db, author_id, paper_id));
 
 	return f;
 }
