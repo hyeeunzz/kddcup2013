@@ -5,6 +5,8 @@
 #include "db.h"
 #include "util.h"
 
+#define MAGIC_NUMBER 856362
+
 typedef double Feature;
 typedef std::vector<double> FeatureList;
 typedef int Label;
