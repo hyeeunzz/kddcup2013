@@ -7,8 +7,15 @@
 
 #define MAGIC_NUMBER 856362
 
-typedef double Feature;
-typedef std::vector<double> FeatureList;
+typedef struct _Feature {
+	int id;
+	double value;
+	_Feature(int _id, int _value){
+		id = _id;
+		value = _value;
+	}
+} Feature;
+typedef std::vector<Feature> FeatureList;
 typedef int Label;
 
 typedef struct _Example {
@@ -18,7 +25,6 @@ typedef struct _Example {
 	Label y; // +1: positive, -1: negative
 } Example;
 
-//typedef std::vector<Example*> Dataset;
 class Dataset {
 public:
 	DB *db;

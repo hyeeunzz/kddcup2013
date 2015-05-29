@@ -144,3 +144,21 @@ void generateSmallDomain(DB *db)
 	fclose(paper_author_fp);
 	fclose(train_fp);
 }
+
+std::vector<std::string> split(const std::string &str, const char *wschars)
+{
+	const char *cstr = str.c_str();
+	std::vector<std::string> out;
+
+	while (*cstr) {                     // while remaining string not empty
+		size_t toklen;
+		cstr += strspn(cstr, wschars);    // skip leading whitespace
+		toklen = strcspn(cstr, wschars);  // figure out token length
+		if (toklen)                       // if we have a token, add to list
+			out.push_back(std::string(cstr, toklen));
+		cstr += toklen;                   // skip over token
+	}
+
+	// ran out of string; return list
+	return out;
+}

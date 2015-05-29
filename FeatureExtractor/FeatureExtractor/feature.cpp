@@ -75,11 +75,11 @@ Dataset* loadDataset(char *filename, DB *db)
 		int count = 0;
 		for (size_t j = 0; j < result->examples.size(); j++){
 			Example *example = result->examples[j];
-			if (example->X[i] == MAGIC_NUMBER) {
+			if (example->X[i].value == MAGIC_NUMBER) {
 				magic = true;
 			}
 			else {
-				mean += example->X[i];
+				mean += example->X[i].value;
 				count++;
 			}
 		}
@@ -87,9 +87,19 @@ Dataset* loadDataset(char *filename, DB *db)
 		if (magic){
 			for (size_t j = 0; j < result->examples.size(); j++){
 				Example *example = result->examples[j];
-				if (example->X[i] == MAGIC_NUMBER) {
-					example->X[i] = mean;
+				if (example->X[i].value == MAGIC_NUMBER) {
+					example->X[i].value = mean;
 				}
+			}
+		}
+	}
+
+	// Check existence of duplicated feature id
+	for (int i = 0; i < D; i++){
+		for (int j = i + 1; j < D; j++){
+			if (result->examples[0]->X[i].id == result->examples[0]->X[j].id) {
+				fprintf(stderr, "ERROR - duplicated feature id (%d)!\n", result->examples[0]->X[i].id);
+				exit(10);
 			}
 		}
 	}
@@ -115,6 +125,11 @@ void Dataset::save()
 		exit(1);
 	}
 
+	fprintf(fp, "author_id,paper_id");
+	for (size_t i = 0; i < examples[0]->X.size(); i++){
+		fprintf(fp, ",f%d", examples[0]->X[i].id);
+	}
+	fprintf(fp, ",target\n");
 	for (size_t i = 0; i < examples.size(); i++){
 		Example* example = examples[i];
 		fprintf(fp, "%d,%d", example->author_id, example->paper_id);

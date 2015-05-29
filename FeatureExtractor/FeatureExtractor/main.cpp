@@ -15,8 +15,11 @@ int main(int argc, char *argv[])
 	char *datapath = argv[1];
 
 	DB *db = loadDB(datapath);
-	loadDataset("Train", db)->save();
-	loadDataset("Valid", db)->save();
+	Dataset *train = loadDataset("Train", db);
+	Dataset *valid = loadDataset("Valid", db);
+	printf("# of features : %d\n", train->examples[0]->X.size());
+	train->save();
+	valid->save();
 
 	//generateSmallDomain(db);
 	//for (int i = 0; i < train->examples.size(); i++){
