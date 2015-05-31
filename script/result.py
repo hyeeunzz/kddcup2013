@@ -9,7 +9,7 @@ else:
     in_f = open(inputPath,'r')
     out_f = open(outputPath,'w')
     in_f.readline()
-    out_f.write('AuthorId,PaperIds')
+    out_f.write("AuthorId,PaperIds\n")
     
     front_p = []
     mid_p = []
@@ -27,8 +27,8 @@ else:
         tmp = line.split(',')
         
         if curr_author != tmp[0]:
-            author = "\n"+curr_author+","
-            paper = " ".join(front_p+mid_p+rear_p)
+            author = curr_author+","
+            paper = " ".join(front_p+mid_p+rear_p)+"\n"
             out_f.write(author+paper)
             
             front_p[:] = []
@@ -46,8 +46,8 @@ else:
                 rear_p.append(tmp[1])
             else:
                 mid_p.append(tmp[1])
-    author = "\n"+curr_author+","
-    paper = " ".join(front_p+mid_p+rear_p)
+    author = curr_author+","
+    paper = " ".join(front_p+mid_p+rear_p)+"\n"
     out_f.write(author+paper)
     
     in_f.close()

@@ -15,7 +15,7 @@ else:
     
     for one_line in sol:
         line = one_line.split(',')
-        line[1] = line[1].split()
+        line[1] = set(line[1].split())
         s_dic[line[0]] = line[1]
 
     maps = []
@@ -30,6 +30,7 @@ else:
                 cnt+=1
                 t_sum += cnt/(i+1)
                 sol_list.remove(line[1][i])
+        
         maps.append(t_sum/cnt)
     
     print 'MAP:',sum(maps)/len(maps)
