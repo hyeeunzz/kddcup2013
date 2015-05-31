@@ -27,11 +27,11 @@ else:
         t_sum = 0.0
         for i in range(len(line[1])):
             if line[1][i] in sol_list:
-               cnt+=1
-               t_sum += cnt/(i+1)
+                cnt+=1
+                t_sum += cnt/(i+1)
+                sol_list.remove(line[1][i])
         maps.append(t_sum/cnt)
     
-    print maps
     print 'MAP:',sum(maps)/len(maps)
     
     out.close()
