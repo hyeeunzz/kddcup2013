@@ -18,7 +18,7 @@ else:
     line = in_f.readline()
     tmp = line.split(',')
     curr_author = tmp[0]
-    if tmp[-1] == '1':
+    if int(tmp[-1]) == '1':
         front_p.append(tmp[1])
     else:
         mid_p.append(tmp[1])
@@ -28,14 +28,16 @@ else:
         
         if curr_author != tmp[0]:
             author = "\n"+curr_author+","
-            paper = " ".join(front_p)+" ".join(mid_p)+" ".join(rear_p)
+            paper = " ".join(front_p+mid_p+rear_p)
             out_f.write(author+paper)
+            if len(rear_p) != 0:
+                print curr_author, rear_p
             front_p[:] = []
             mid_p[:] = []
             rear_p[:] = []
             curr_author = tmp[0]
         
-        if tmp[-1] == '1':
+        if int(tmp[-1]) == 1:
             if tmp[1] in front_p:
                 rear_p.append(tmp[1])
             else:
