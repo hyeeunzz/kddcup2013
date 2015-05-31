@@ -11,3 +11,5 @@ data/*.zip
 */x64
 *.csv
 *.asv
+.pydevproject
+.project
