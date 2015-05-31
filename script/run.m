@@ -25,6 +25,5 @@ dlmwrite(sprintf('%s\\Valid.feature.predict.csv', DATA_DIRECTORY), output, 'deli
 fprintf('%f s\n', toc);
 
 %% Unfold result and calculate MAP score
-% system('ruby ..\script\unfold_prediction.rb ..\data\Valid.feature.predict.csv');
-system('python ..\script\unfold.py ..\data\Valid.feature.predict.csv');
+system('python ..\script\result.py ..\data\Valid.feature.predict.csv');
 system('python ..\script\eval.py ..\data\Valid.feature.predict.result.csv ..\data\ValidSolution.csv');
