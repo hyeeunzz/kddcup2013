@@ -1,5 +1,4 @@
 import sys
-from numpy.core.multiarray import empty
 
 if (len(sys.argv) != 2):
     sys.exit("python eval.py input")
@@ -10,7 +9,7 @@ else:
     in_f = open(inputPath,'r')
     out_f = open(outputPath,'w')
     in_f.readline()
-    out_f.write('AuthorId,PaperIds\n')
+    out_f.write('AuthorId,PaperIds')
     
     front_p = []
     mid_p = []
@@ -28,11 +27,9 @@ else:
         tmp = line.split(',')
         
         if curr_author != tmp[0]:
-            s = curr_author+","
-            s+= " ".join(front_p)+" "
-            s+= " ".join(mid_p)+" "
-            s+= " ".join(rear_p)+"\n"
-            out_f.write(s)
+            author = "\n"+curr_author+","
+            paper = " ".join(front_p)+" ".join(mid_p)+" ".join(rear_p)
+            out_f.write(author+paper)
             front_p[:] = []
             mid_p[:] = []
             rear_p[:] = []
