@@ -42,7 +42,10 @@ else:
             else:
                 front_p.append(tmp[1])
         else:
-            mid_p.append(tmp[1])
+            if tmp[1] in mid_p:
+                rear_p.append(tmp[1])
+            else:
+                mid_p.append(tmp[1])
     author = "\n"+curr_author+","
     paper = " ".join(front_p+mid_p+rear_p)
     out_f.write(author+paper)
