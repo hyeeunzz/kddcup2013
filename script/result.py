@@ -43,7 +43,9 @@ else:
                 front_p.append(tmp[1])
         else:
             mid_p.append(tmp[1])
-    
+    author = "\n"+curr_author+","
+    paper = " ".join(front_p+mid_p+rear_p)
+    out_f.write(author+paper)
     in_f.close()
     out_f.close()
     
