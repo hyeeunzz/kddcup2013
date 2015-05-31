@@ -134,7 +134,7 @@ void Dataset::save()
 		Example* example = examples[i];
 		fprintf(fp, "%d,%d", example->author_id, example->paper_id);
 		for (size_t j = 0; j < example->X.size(); j++){
-			fprintf(fp, ",%lf", example->X[j]);
+			fprintf(fp, ",%lf", example->X[j].value);
 		}
 		fprintf(fp, ",%d\n", example->y);
 	}

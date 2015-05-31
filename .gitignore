@@ -9,3 +9,5 @@ data/*.zip
 */*/Release/*
 */*/x64
 */x64
+*.csv
+*.asv
