@@ -30,8 +30,7 @@ else:
             author = "\n"+curr_author+","
             paper = " ".join(front_p+mid_p+rear_p)
             out_f.write(author+paper)
-            if len(rear_p) != 0:
-                print curr_author, rear_p
+            
             front_p[:] = []
             mid_p[:] = []
             rear_p[:] = []
