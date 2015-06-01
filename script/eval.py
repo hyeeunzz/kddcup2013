@@ -13,23 +13,23 @@ else:
     
     s_dic = {}
     
-    for one_line in sol:
-        line = one_line.split(',')
-        line[1] = set(line[1].split())
-        s_dic[line[0]] = line[1]
+    for line in sol:
+        s_key, s_papers = line.split(',')[:2]
+        s_set = set(s_papers.split())
+        s_dic[s_key] = s_set
 
     maps = []
     for one_line in out:
-        line = one_line.split(',')
-        line[1] = line[1].split()
-        sol_list = s_dic[line[0]]
+        key, papers = one_line.split(',')[:2]
+        p_list = papers.split()
+        sol_set = s_dic[key]
         cnt = 0.0
         t_sum = 0.0
-        for i in range(len(line[1])):
-            if line[1][i] in sol_list:
+        for i in range(len(p_list)):
+            if p_list[i] in sol_set:
                 cnt+=1
                 t_sum += cnt/(i+1)
-                sol_list.remove(line[1][i])
+                sol_set.remove(p_list[i])
         
         maps.append(t_sum/cnt)
     
