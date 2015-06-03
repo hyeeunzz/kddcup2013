@@ -19,6 +19,98 @@ unsigned int levenshteinDistance(const std::string& s1, const std::string& s2)
 	return prevCol[len2];
 }
 
+char *TrouverMatches(const char *txt, const int *bl)
+{
+	int i, j;
+	char *res = (char*) malloc(256 * sizeof(char));
+	char ctmp = 'a';
+	for (i = 0; i<256; i++)
+	{
+		res[i] = 0;
+	}
+	i = 0, j = 0;
+	while (ctmp != 0)
+	{
+		ctmp = txt[i];
+		if (bl[i] == true)
+		{
+			res[j] = ctmp;
+			j++;
+		}
+		i++;
+	}
+	return res;
+}
+
+double jaroDistance(const std::string &s1, const std::string &s2)
+{
+	const char *t1 = s1.c_str();
+	const char *t2 = s2.c_str();
+
+	int ecartMax, l1, l2, compteMatching, compteTransposition, longueurPrefix, i, j;
+	char *t1Matche, *t2Matche;
+	int *b1, *b2;
+	double distanceJaro;
+	if (t1[0] == 0 || t2[0] == 0)
+		return 0.0;
+	l1 = strlen(t1);
+	l2 = strlen(t2);
+	ecartMax = (std::max(l1, l2) / 2) - 1;
+	compteMatching = 0;
+	b1 = (int*) malloc((l1 + 2)*sizeof(int));
+	b2 = (int*) malloc((l2 + 2)*sizeof(int));
+	for (i = 0; i<l1; i++)
+		b1[i] = false;
+	for (i = 0; i<l2; i++)
+		b2[i] = false;
+
+	for (i = 0; i<l1; i++)
+	{
+		for (j = std::max(i - ecartMax, 0); j <= std::min(i + ecartMax, l2); j++)
+		{
+			if (t1[i] == t2[j])
+			{
+				b1[i] = true;
+				b2[j] = true;
+				compteMatching++;
+				break;
+			}
+		}
+	}
+
+	if (compteMatching == 0)
+		return 0.0;
+
+	t1Matche = TrouverMatches(t1, b1);
+	t2Matche = TrouverMatches(t2, b2);
+
+	compteTransposition = 0;
+	if (strcmp(t1Matche, t2Matche) != 0)
+	{
+		for (i = 0; i<strlen(t1Matche); i++)
+		if (t1Matche[i] != t2Matche[i])
+			compteTransposition++;
+	}
+	else
+		compteTransposition = 0;
+
+	free(t1Matche);
+	free(t2Matche);
+
+	distanceJaro = (((double)compteMatching / l1) + ((double)compteMatching / l2) + ((compteMatching - compteTransposition / 2.0) / compteMatching)) / 3.0;
+
+	longueurPrefix = 0;
+	for (i = 0; i<std::min(3, std::min(l1, l2)) + 1; i++)
+	{
+		if (t1[i] == t2[i])
+			longueurPrefix++;
+		else
+			break;
+
+	}
+	return distanceJaro + (longueurPrefix*0.1*(1 - distanceJaro));
+}
+
 void stringToLower(std::string& s){
 	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
 }

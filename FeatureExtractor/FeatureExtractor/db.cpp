@@ -1,5 +1,7 @@
 #include "db.h"
 
+#define BUFFER_SIZE 8192
+
 bool authorCompare(const Author *a, const Author *b) { return a->id < b->id; }
 bool paperCompare(const Paper *a, const Paper *b) { return a->id < b->id; }
 bool paperAuthorCompare(const PaperAuthor *a, const PaperAuthor *b) { return a->paper_id < b->paper_id; }
@@ -7,6 +9,30 @@ bool paperAuthorIndexCompare(const PaperAuthorIndex *a, const PaperAuthorIndex *
 bool conferenceCompare(const Conference *a, const Conference *b) { return a->id < b->id; }
 bool JournalCompare(const Journal *a, const Journal *b) { return a->id < b->id; }
 bool isPrintable(char c) { return c >= 32 && c <= 126; }
+
+inline char my_getc(FILE *fp, char buffer[BUFFER_SIZE], int &buffer_count, int &buffer_p){
+	if (buffer_p >= buffer_count){
+		buffer_count = fread(buffer, sizeof(char), BUFFER_SIZE, fp);
+		buffer_p = 0;
+		return (buffer_count == 0) ? EOF : buffer[buffer_p++];
+	}
+	else {
+		return buffer[buffer_p++];
+	}
+}
+
+int getIdFromBuffer(FILE *fp, char buffer[BUFFER_SIZE], int &buffer_count, int &buffer_p)
+{
+	int id = 0;
+	char c = my_getc(fp, buffer, buffer_count, buffer_p);
+	if (c == EOF) return -1;
+	while (c != ',' && c != EOF){
+		id = id * 10 + (c - '0');
+		c = my_getc(fp, buffer, buffer_count, buffer_p);
+	}
+	if (c == EOF) return -1;
+	return id;
+}
 
 FILE *getFile(char *datapath, char *filename)
 {
@@ -30,10 +56,14 @@ void parseAuthor(DB *db)
 {
 	clock_t start_time = std::clock();
 	FILE *fp = getFile(db->datapath, "Author");
+	char buffer[BUFFER_SIZE];
+	int buffer_count = 0;
+	int buffer_p = 0;
 
-	while (!feof(fp)){
+	while (true){
 		Author author;
-		fscanf_s(fp, "%d,", &author.id);
+		author.id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		if (author.id == -1) break;
 
 		char c = 0;
 		char name[144], affiliation[144];
@@ -42,7 +72,7 @@ void parseAuthor(DB *db)
 		bool quote = false;
 
 		while (true) {
-			c = getc(fp);
+			c = my_getc(fp, buffer, buffer_count, buffer_p);
 			if (!quote && c == ','){
 				if (state == 0){
 					state = 1;
@@ -72,10 +102,10 @@ void parseAuthor(DB *db)
 		author.name = std::string(name);
 		author.affiliation = std::string(affiliation);
 
+		db->authors.push_back(new Author(author));
 		if (c == EOF) {
 			break;
 		}
-		db->authors.push_back(new Author(author));
 	}
 	sort(db->authors.begin(), db->authors.end(), authorCompare);
 	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
@@ -86,10 +116,14 @@ void parsePaper(DB *db)
 {
 	clock_t start_time = std::clock();
 	FILE *fp = getFile(db->datapath, "Paper");
+	char buffer[BUFFER_SIZE];
+	int buffer_count = 0;
+	int buffer_p = 0;
 
-	while (!feof(fp)){
+	while (true){
 		Paper paper;
-		fscanf_s(fp, "%d,", &paper.id);
+		paper.id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		if (paper.id == -1) break;
 
 		char c = 0;
 		char title[144], keywords[144];
@@ -101,7 +135,7 @@ void parsePaper(DB *db)
 		paper.journal_id = 0;
 
 		while (true) {
-			c = getc(fp);
+			c = my_getc(fp, buffer, buffer_count, buffer_p);
 			if (!quote && c == ','){
 				if (state < 4){
 					state++;
@@ -145,10 +179,10 @@ void parsePaper(DB *db)
 		keywords[keyword_index] = 0;
 		paper.title = std::string(title);
 		paper.keywords = std::string(keywords);
+		db->papers.push_back(new Paper(paper));
 		if (c == EOF) {
 			break;
 		}
-		db->papers.push_back(new Paper(paper));
 	}
 	std::sort(db->papers.begin(), db->papers.end(), paperCompare);
 	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
@@ -159,10 +193,15 @@ void parsePaperAuthor(DB *db)
 {
 	clock_t start_time = std::clock();
 	FILE *fp = getFile(db->datapath, "PaperAuthor");
+	char buffer[BUFFER_SIZE];
+	int buffer_count = 0;
+	int buffer_p = 0;
 
-	while (!feof(fp)){
+	while (true){
 		PaperAuthor paper_author;
-		fscanf_s(fp, "%d,%d,", &paper_author.paper_id, &paper_author.author_id);
+		paper_author.paper_id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		paper_author.author_id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		if (paper_author.paper_id == -1 || paper_author.author_id == -1) break;
 
 		char c = 0;
 		char name[144], affiliation[144];
@@ -171,7 +210,7 @@ void parsePaperAuthor(DB *db)
 		bool quote = false;
 
 		while (true) {
-			c = getc(fp);
+			c = my_getc(fp, buffer, buffer_count, buffer_p);
 			if (!quote && c == ','){
 				if (state == 0){
 					state = 1;
@@ -200,10 +239,10 @@ void parsePaperAuthor(DB *db)
 		affiliation[affiliation_index] = 0;
 		paper_author.name = std::string(name);
 		paper_author.affiliation = std::string(affiliation);
+		db->paper_authors.push_back(new PaperAuthor(paper_author));
 		if (c == EOF) {
 			break;
 		}
-		db->paper_authors.push_back(new PaperAuthor(paper_author));
 	}
 	std::sort(db->paper_authors.begin(), db->paper_authors.end(), paperAuthorCompare);
 
@@ -224,10 +263,14 @@ void parseConference(DB *db)
 {
 	clock_t start_time = std::clock();
 	FILE *fp = getFile(db->datapath, "Conference");
+	char buffer[BUFFER_SIZE];
+	int buffer_count = 0;
+	int buffer_p = 0;
 
-	while (!feof(fp)){
+	while (true){
 		Conference conference;
-		fscanf_s(fp, "%d,", &conference.id);
+		conference.id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		if (conference.id == -1) break;
 
 		char c = 0;
 		char shortname[144], fullname[144], homepage[144];
@@ -236,7 +279,7 @@ void parseConference(DB *db)
 		bool quote = false;
 
 		while (true) {
-			c = getc(fp);
+			c = my_getc(fp, buffer, buffer_count, buffer_p);
 			if (!quote && c == ','){
 				if (state < 2){
 					state++;
@@ -270,10 +313,10 @@ void parseConference(DB *db)
 		conference.shortname = std::string(shortname);
 		conference.fullname = std::string(fullname);
 		conference.homepage = std::string(homepage);
+		db->conferences.push_back(new Conference(conference));
 		if (c == EOF) {
 			break;
 		}
-		db->conferences.push_back(new Conference(conference));
 	}
 	std::sort(db->conferences.begin(), db->conferences.end(), conferenceCompare);
 	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
@@ -284,10 +327,14 @@ void parseJournal(DB *db)
 {
 	clock_t start_time = std::clock();
 	FILE *fp = getFile(db->datapath, "Journal");
+	char buffer[BUFFER_SIZE];
+	int buffer_count = 0;
+	int buffer_p = 0;
 
-	while (!feof(fp)){
+	while (true){
 		Journal journal;
-		fscanf_s(fp, "%d,", &journal.id);
+		journal.id = getIdFromBuffer(fp, buffer, buffer_count, buffer_p);
+		if (journal.id == -1) break;
 
 		char c = 0;
 		char shortname[144], fullname[144], homepage[144];
@@ -296,7 +343,7 @@ void parseJournal(DB *db)
 		bool quote = false;
 
 		while (true) {
-			c = getc(fp);
+			c = my_getc(fp, buffer, buffer_count, buffer_p);
 			if (!quote && c == ','){
 				if (state < 2){
 					state++;
@@ -330,10 +377,10 @@ void parseJournal(DB *db)
 		journal.shortname = std::string(shortname);
 		journal.fullname = std::string(fullname);
 		journal.homepage = std::string(homepage);
+		db->journals.push_back(new Journal(journal));
 		if (c == EOF) {
 			break;
 		}
-		db->journals.push_back(new Journal(journal));
 	}
 	std::sort(db->journals.begin(), db->journals.end(), JournalCompare);
 	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
