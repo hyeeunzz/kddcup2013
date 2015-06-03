@@ -441,7 +441,7 @@ Feature generateCoauthorAffiliationJaroDistanceFeature(DB *db, int author_id, in
 	}
 
 	if (count > 0) {
-		return Feature(113, *min_element(distances.begin(), distances.end()));
+		return Feature(113, *max_element(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(113, MAGIC_NUMBER);
