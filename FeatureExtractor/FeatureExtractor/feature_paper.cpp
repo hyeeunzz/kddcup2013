@@ -92,9 +92,35 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 
 }
 
+Feature generateMeanPaperPublicationYear(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int year = 0;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2->year > 1500 && paper2->year < 2014) {
+			year += paper2->year;
+			count++;
+		}
+	}
+
+	if (count > 0) {
+		double avg_year = (double)year / count;
+		return Feature(204, abs(paper->year - avg_year));
+	}
+	else {
+		return Feature(204, MAGIC_NUMBER);
+	}
+}
+
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	f.push_back(generateMeanPaperPublicationYear(db, author_id, paper_id));
 }
