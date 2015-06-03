@@ -95,6 +95,6 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
 }
