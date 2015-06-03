@@ -256,14 +256,14 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 
 void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	//f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
 	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorNameLevenstheinDistanceFeature2(db, author_id, paper_id));
+	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorNameLevenstheinDistanceFeature2(db, author_id, paper_id));
 	f.push_back(generateAuthorCoauthorNameLevstheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
 	//f.push_back(generateNumberofSameNameAuthors(db, author_id, paper_id));
-	//f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
+	f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
 	f.push_back(generateAverageNumberofPapersofCoauthor(db, author_id, paper_id));
 	//f.push_back(generateNumberofPapersofAuthor(db, author_id, paper_id));
 }
