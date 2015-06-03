@@ -34,7 +34,7 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 		else
 			return Feature(201, -1);
 	}
-	return Feature(201, 0);
+	return Feature(201, MAGIC_NUMBER);
 	
 }
 
@@ -61,7 +61,7 @@ Feature generatePaperConferenceFeature(DB *db, int author_id, int paper_id)
 		}
 		return Feature(202, -1);
 	}
-	return Feature(202, 0);
+	return Feature(202, MAGIC_NUMBER);
 
 }
 
@@ -88,13 +88,13 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 		}
 		return Feature(203, -1);
 	}
-	return Feature(203, 0);
+	return Feature(203, MAGIC_NUMBER);
 
 }
 
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
 }
