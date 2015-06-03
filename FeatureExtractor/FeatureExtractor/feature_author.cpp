@@ -16,7 +16,7 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 	for (size_t i = 0; i < paper_authors.size(); i++){
 		PaperAuthor *author2 = paper_authors[i];
-		if (strlen(author->affiliation) > 0 && strlen(author2->affiliation) > 0) {
+		if (author->affiliation.length() > 0 && author2->affiliation.length() > 0) {
 			string author_affiliation(author->affiliation);
 			string author2_affiliation(author2->affiliation);
 			stringToLower(author_affiliation);
@@ -47,7 +47,7 @@ Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author
 		if (coauthor == NULL || author->id == coauthor->id){
 			continue;
 		}
-		if (strlen(author->affiliation) > 0 && strlen(coauthor->affiliation) > 0) {
+		if (author->affiliation.length() > 0 && coauthor->affiliation.length() > 0) {
 			string author_affiliation(author->affiliation);
 			string coauthor_affiliation(coauthor->affiliation);
 			stringToLower(author_affiliation);
@@ -77,7 +77,7 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 	for (size_t i = 0; i < paper_authors.size(); i++){
 		PaperAuthor *author2 = paper_authors[i];
-		if (strlen(author->name) > 0 && strlen(author2->name) > 0) {
+		if (author->name.length() > 0 && author2->name.length() > 0) {
 			string name(author->name);
 			string name2(author2->name);
 			stringToLower(name);
@@ -126,7 +126,7 @@ Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id
 		if (coauthor == NULL || author->id == coauthor->id){
 			continue;
 		}
-		if (strlen(author->name) > 0 && strlen(coauthor->name) > 0) {
+		if (author->name.length() > 0 && coauthor->name.length() > 0) {
 			string name(author->name);
 			string name2(coauthor->name);
 			stringToLower(name);
@@ -157,12 +157,12 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 		if (coauthor == NULL || author->id == coauthor->id){
 			continue;
 		}
-		if (strlen(author->name) > 0 && strlen(coauthor->name) > 0) {
+		if (author->name.length() > 0 && coauthor->name.length() > 0) {
 			// Compare Lastname
 			int count2 = 0;
 			char lastname[96];
 			char lastname2[96];
-			for (size_t j = 0; j < strlen(author->name); j++){
+			for (size_t j = 0; j < author->name.length(); j++){
 				if (author->name[j] == NULL) {
 					lastname[count2] = NULL;
 					break;
@@ -173,7 +173,7 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 					count2++;
 				}
 			}
-			for (size_t j = 0; j < strlen(coauthor->name); j++){
+			for (size_t j = 0; j < coauthor->name.length(); j++){
 				if (coauthor->name[j] == NULL) {
 					lastname2[count2] = NULL;
 					break;

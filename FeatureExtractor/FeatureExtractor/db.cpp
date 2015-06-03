@@ -36,6 +36,7 @@ void parseAuthor(DB *db)
 		fscanf_s(fp, "%d,", &author.id);
 
 		char c = 0;
+		char name[144], affiliation[144];
 		int name_index = 0, affiliation_index = 0;
 		int state = 0; // 0: name, 1: affiliation
 		bool quote = false;
@@ -56,18 +57,21 @@ void parseAuthor(DB *db)
 			}
 			else if (isPrintable(c)) { //printable ascii
 				if (state == 0){
-					author.name[name_index++] = c;
+					name[name_index++] = c;
 				}
 				else {
-					author.affiliation[affiliation_index++] = c;
+					affiliation[affiliation_index++] = c;
 				}
 			}
 			else if ((!quote && c == '\n') || c == EOF){
 				break;
 			}
 		}
-		author.name[name_index] = 0;
-		author.affiliation[affiliation_index] = 0;
+		name[name_index] = 0;
+		affiliation[affiliation_index] = 0;
+		author.name = std::string(name);
+		author.affiliation = std::string(affiliation);
+
 		if (c == EOF) {
 			break;
 		}
@@ -88,6 +92,7 @@ void parsePaper(DB *db)
 		fscanf_s(fp, "%d,", &paper.id);
 
 		char c = 0;
+		char title[144], keywords[144];
 		int title_index = 0, keyword_index = 0;
 		int state = 0; // 0: title, 1: year, 2: ConferenceId, 3: JournalId, 4: Keyword
 		bool quote = false;
@@ -111,7 +116,7 @@ void parsePaper(DB *db)
 			}
 			else if (isPrintable(c)) { //printable ascii
 				if (state == 0){ // title
-					paper.title[title_index++] = c;
+					title[title_index++] = c;
 				}
 				else if (state == 1){ // year
 					if (c >= '0' && c <= '9'){
@@ -129,15 +134,17 @@ void parsePaper(DB *db)
 					}
 				}
 				else if (state == 4){
-					paper.keywords[keyword_index++] = c;
+					keywords[keyword_index++] = c;
 				}
 			}
 			else if ((!quote && c == '\n') || c == EOF){
 				break;
 			}
 		}
-		paper.title[title_index] = 0;
-		paper.keywords[keyword_index] = 0;
+		title[title_index] = 0;
+		keywords[keyword_index] = 0;
+		paper.title = std::string(title);
+		paper.keywords = std::string(keywords);
 		if (c == EOF) {
 			break;
 		}
@@ -158,6 +165,7 @@ void parsePaperAuthor(DB *db)
 		fscanf_s(fp, "%d,%d,", &paper_author.paper_id, &paper_author.author_id);
 
 		char c = 0;
+		char name[144], affiliation[144];
 		int name_index = 0, affiliation_index = 0;
 		int state = 0; // 0: name, 1: affiliation
 		bool quote = false;
@@ -178,18 +186,20 @@ void parsePaperAuthor(DB *db)
 			}
 			else if (isPrintable(c)) { //printable ascii
 				if (state == 0){
-					paper_author.name[name_index++] = c;
+					name[name_index++] = c;
 				}
 				else {
-					paper_author.affiliation[affiliation_index++] = c;
+					affiliation[affiliation_index++] = c;
 				}
 			}
 			else if ((!quote && c == '\n') || c == EOF){
 				break;
 			}
 		}
-		paper_author.name[name_index] = 0;
-		paper_author.affiliation[affiliation_index] = 0;
+		name[name_index] = 0;
+		affiliation[affiliation_index] = 0;
+		paper_author.name = std::string(name);
+		paper_author.affiliation = std::string(affiliation);
 		if (c == EOF) {
 			break;
 		}
@@ -220,6 +230,7 @@ void parseConference(DB *db)
 		fscanf_s(fp, "%d,", &conference.id);
 
 		char c = 0;
+		char shortname[144], fullname[144], homepage[144];
 		int shortname_index = 0, fullname_index = 0, homepage_index = 0;
 		int state = 0; // 0: shortname, 1: fullname, 2: homepage
 		bool quote = false;
@@ -240,22 +251,25 @@ void parseConference(DB *db)
 			}
 			else if (isPrintable(c)) { //printable ascii
 				if (state == 0){ // shortname
-					conference.shortname[shortname_index++] = c;
+					shortname[shortname_index++] = c;
 				}
 				else if (state == 1){ // fullname
-					conference.fullname[fullname_index++] = c;
+					fullname[fullname_index++] = c;
 				}
 				else if (state == 2){ // homepage
-					conference.homepage[homepage_index++] = c;
+					homepage[homepage_index++] = c;
 				}
 			}
 			else if ((!quote && c == '\n') || c == EOF){
 				break;
 			}
 		}
-		conference.shortname[shortname_index] = 0;
-		conference.fullname[fullname_index] = 0;
-		conference.homepage[homepage_index] = 0;
+		shortname[shortname_index] = 0;
+		fullname[fullname_index] = 0;
+		homepage[homepage_index] = 0;
+		conference.shortname = std::string(shortname);
+		conference.fullname = std::string(fullname);
+		conference.homepage = std::string(homepage);
 		if (c == EOF) {
 			break;
 		}
@@ -276,6 +290,7 @@ void parseJournal(DB *db)
 		fscanf_s(fp, "%d,", &journal.id);
 
 		char c = 0;
+		char shortname[144], fullname[144], homepage[144];
 		int shortname_index = 0, fullname_index = 0, homepage_index = 0;
 		int state = 0; // 0: shortname, 1: fullname, 2: homepage
 		bool quote = false;
@@ -296,22 +311,25 @@ void parseJournal(DB *db)
 			}
 			else if (isPrintable(c)) { //printable ascii
 				if (state == 0){ // shortname
-					journal.shortname[shortname_index++] = c;
+					shortname[shortname_index++] = c;
 				}
 				else if (state == 1){ // fullname
-					journal.fullname[fullname_index++] = c;
+					fullname[fullname_index++] = c;
 				}
 				else if (state == 2){ // homepage
-					journal.homepage[homepage_index++] = c;
+					homepage[homepage_index++] = c;
 				}
 			}
 			else if ((!quote && c == '\n') || c == EOF){
 				break;
 			}
 		}
-		journal.shortname[shortname_index] = 0;
-		journal.fullname[fullname_index] = 0;
-		journal.homepage[homepage_index] = 0;
+		shortname[shortname_index] = 0;
+		fullname[fullname_index] = 0;
+		homepage[homepage_index] = 0;
+		journal.shortname = std::string(shortname);
+		journal.fullname = std::string(fullname);
+		journal.homepage = std::string(homepage);
 		if (c == EOF) {
 			break;
 		}

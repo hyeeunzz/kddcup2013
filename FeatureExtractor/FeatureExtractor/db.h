@@ -4,41 +4,42 @@
 #include <vector>
 #include <algorithm>
 #include <ctime>
+#include <string>
 
 typedef struct _Author {
 	int id;
-	char name[96];
-	char affiliation[144];
+	std::string name;
+	std::string affiliation;
 } Author;
 
 typedef struct _Paper {
 	int id;
-	char title[144];
+	std::string title;
 	int year;
 	int conference_id;
 	int journal_id;
-	char keywords[144];
+	std::string keywords;
 } Paper;
 
 typedef struct _PaperAuthor {
 	int paper_id;
 	int author_id;
-	char name[96];
-	char affiliation[144];
+	std::string name;
+	std::string affiliation;
 } PaperAuthor;
 
 typedef struct _Conference {
 	int id;
-	char shortname[64];
-	char fullname[144];
-	char homepage[144];
+	std::string shortname;
+	std::string fullname;
+	std::string homepage;
 } Conference;
 
 typedef struct _Journal {
 	int id;
-	char shortname[64];
-	char fullname[144];
-	char homepage[144];
+	std::string shortname;
+	std::string fullname;
+	std::string homepage;
 } Journal;
 
 // to support binary search of author_id in PaperAuthor
