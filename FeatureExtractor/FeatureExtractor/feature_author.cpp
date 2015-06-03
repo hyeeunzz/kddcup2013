@@ -27,7 +27,7 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 	}
 
 	if (count > 0){
-		return Feature(101, *max_element(distances.begin(), distances.end()));
+		return Feature(101, *min_element(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(101, MAGIC_NUMBER);
@@ -88,7 +88,7 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 	}
 
 	if (count > 0){
-		return Feature(103, *max_element(distances.begin(), distances.end()));
+		return Feature(103, *min_element(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(103, MAGIC_NUMBER);
@@ -204,88 +204,66 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 	}
 }
 
-// Levenshtein distance between author's first name and coauthor's first name
-Feature generateAuthorCoauthorFirstNameLevestheinDistanceFeature(DB *db, int author_id, int paper_id)
-{
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-
-	vector<double> distances;
-	int count = 0;
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
-		if (coauthor == NULL || author->id == coauthor->id){
-			continue;
-		}
-		if (author->name.length() > 0 && coauthor->name.length() > 0) {
-			// Compare Lastname
-			int count2 = 0;
-			char firstname[96];
-			char firstname2[96];
-			for (size_t j = 0; j < author->name.length(); j++){
-				if (author->name[j] == NULL || author->name[j] == ' ') {
-					firstname[count2] = NULL;
-					break;
-				}
-				else {
-					firstname[count2] = author->name[j];
-					count2++;
-				}
-			}
-			count2 = 0;
-			for (size_t j = 0; j < coauthor->name.length(); j++){
-				if (coauthor->name[j] == NULL || coauthor->name[j] == ' ') {
-					firstname2[count2] = NULL;
-					break;
-				}
-				else {
-					firstname2[count2] = coauthor->name[j];
-					count2++;
-				}
-			}
-			string name(firstname);
-			string name2(firstname2);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(levenshteinDistance(firstname, firstname2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(107, *min_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(107, MAGIC_NUMBER);
-	}
-}
 // The number of authors having the same name of the author's name
 Feature generateNumberofSameNameAuthors(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 
 	int count = 0;
 	for (size_t i = 0; i < db->authors.size(); i++) {
 		if (author->name == db->authors[i]->name) count++;
 	}
-	for (size_t i = 0; i < paper_authors.size(); i++) {
+	for (size_t i = 0; i < db->paper_authors.size(); i++) {
 		if (author->name == paper_authors[i]->name) count++;
 	}
 	
-	return Feature(108, count);
+	return Feature(107, count);
+}
+
+Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
+{
+	Author *author = db->getAuthorById(author_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
+
+	return Feature(108, paper_authors.size());
+}
+
+Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper_id)
+{
+	Author *author = db->getAuthorById(author_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
+
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		vector<PaperAuthor*> paper_authors2;
+		db->getPaperAuthorsByAuthorId(paper_authors2, paper_authors[i]->author_id);
+		count += paper_authors2.size();
+	}
+
+	return Feature(109, count/paper_authors.size());
+}
+
+Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
+{
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByPaperId(paper_authors, author_id);
+
+	return Feature(110, paper_authors.size());
 }
 
 void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	//f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
 	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
+	//f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
 	//f.push_back(generateAuthorNameLevenstheinDistanceFeature2(db, author_id, paper_id));
 	f.push_back(generateAuthorCoauthorNameLevstheinDistanceFeature(db, author_id, paper_id));
 	//f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorFirstNameLevestheinDistanceFeature(db, author_id, paper_id));
 	//f.push_back(generateNumberofSameNameAuthors(db, author_id, paper_id));
+	//f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
+	f.push_back(generateAverageNumberofPapersofCoauthor(db, author_id, paper_id));
+	//f.push_back(generateNumberofPapersofAuthor(db, author_id, paper_id));
 }
