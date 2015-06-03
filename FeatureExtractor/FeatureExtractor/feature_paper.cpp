@@ -11,7 +11,7 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
 
 	int p_year = paper->year;
-	if (p_year != 0){
+	if (p_year > 0){
 		int min_year = 2014;
 		int max_year = 0;
 		int p_year2;
@@ -29,9 +29,10 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 			}
 		}
 
-		if (min_year < p_year && p_year < max_year){
+		if (min_year < p_year && p_year < max_year)
 			return Feature(201, 1);
-		}
+		else
+			return Feature(201, -1);
 	}
 	return Feature(201, 0);
 	
@@ -58,6 +59,7 @@ Feature generatePaperConferenceFeature(DB *db, int author_id, int paper_id)
 				}
 			}
 		}
+		return Feature(202, -1);
 	}
 	return Feature(202, 0);
 
@@ -84,6 +86,7 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 				}
 			}
 		}
+		return Feature(203, -1);
 	}
 	return Feature(203, 0);
 
