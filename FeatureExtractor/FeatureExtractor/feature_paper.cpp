@@ -92,7 +92,7 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 
 }
 
-Feature generateMeanPaperPublicationYear(DB *db, int author_id, int paper_id)
+Feature generateMeanPaperPublicationYearofAuthor(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -102,9 +102,11 @@ Feature generateMeanPaperPublicationYear(DB *db, int author_id, int paper_id)
 	int count = 0;
 	for (size_t i = 0; i < paper_authors.size(); i++) {
 		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
-		if (paper2->year > 1500 && paper2->year < 2014) {
-			year += paper2->year;
-			count++;
+		if (paper2 != NULL) {
+			if (paper2->year > 1500 && paper2->year < 2014) {
+				year += paper2->year;
+				count++;
+			}
 		}
 	}
 
@@ -117,16 +119,50 @@ Feature generateMeanPaperPublicationYear(DB *db, int author_id, int paper_id)
 	}
 }
 
+Feature generateMeanPaperPublicationYearofCoauthor(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
+
+	int year = 0;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
+		vector<PaperAuthor*> paper_authors2;
+		if (coauthor != NULL) {
+			db->getPaperAuthorsByAuthorId(paper_authors2, coauthor->id);
+			for (size_t j = 0; j < paper_authors2.size(); j++) {
+				Paper *paper2 = db->getPaperById(paper_authors2[j]->paper_id);
+				if (paper2 != NULL) {
+					if (paper2->year > 1500 && paper2->year < 2014) {
+						year += paper2->year;
+						count++;
+					}
+				}
+			}
+		}
+	}
+
+	if (count > 0) {
+		double avg_year = (double)year / count;
+		return Feature(205, abs(paper->year - avg_year));
+	}
+	else {
+		return Feature(205, MAGIC_NUMBER);
+	}
+}
+
 // Distance between major conference cluster and paper's conference cluster
 Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
 	if (this_paper->conference_id == 0){
-		return Feature(205, MAGIC_NUMBER);
+		return Feature(206, MAGIC_NUMBER);
 	}
 	Conference *this_conference = db->getConferenceById(this_paper->conference_id);
 	if (this_conference == NULL) {
-		return Feature(205, MAGIC_NUMBER);
+		return Feature(206, MAGIC_NUMBER);
 	}
 
 	// Determine author's major conference cluster
@@ -150,7 +186,7 @@ Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 		}
 	}
 
-	return Feature(205, result);
+	return Feature(206, result);
 }
 
 // Distance between major journal cluster and paper's journal cluster
@@ -158,11 +194,11 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
 	if (this_paper->journal_id == 0){
-		return Feature(206, MAGIC_NUMBER);
+		return Feature(207, MAGIC_NUMBER);
 	}
 	Journal *this_journal = db->getJournalById(this_paper->journal_id);
 	if (this_journal == NULL) {
-		return Feature(206, MAGIC_NUMBER);
+		return Feature(207, MAGIC_NUMBER);
 	}
 
 	// Determine author's major journal cluster
@@ -186,15 +222,16 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 		}
 	}
 
-	return Feature(206, result);
+	return Feature(207, result);
 }
 
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
-	f.push_back(generateMeanPaperPublicationYear(db, author_id, paper_id));
+	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	f.push_back(generateMeanPaperPublicationYearofAuthor(db, author_id, paper_id));
+	f.push_back(generateMeanPaperPublicationYearofCoauthor(db, author_id, paper_id));
 	f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
 	f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
 }
