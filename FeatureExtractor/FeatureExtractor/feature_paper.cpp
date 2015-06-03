@@ -37,7 +37,61 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 	
 }
 
+Feature generatePaperConferenceFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int p_con = paper->conference_id;
+	if (p_con > 0){
+		int p_con2;
+		for (size_t i = 0; i < paper_authors.size(); i++){
+			PaperAuthor *author2 = paper_authors[i];
+			if (author2->paper_id != paper_id){
+				Paper *paper2 = db->getPaperById(author2->paper_id);
+				if (paper2 != NULL){
+					p_con2 = paper2->conference_id;
+					if (p_con == p_con2){
+						return Feature(202, 1);
+					}
+				}
+			}
+		}
+	}
+	return Feature(202, 0);
+
+}
+
+Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int p_jrn = paper->journal_id;
+	if (p_jrn > 0){
+		int p_jrn2;
+		for (size_t i = 0; i < paper_authors.size(); i++){
+			PaperAuthor *author2 = paper_authors[i];
+			if (author2->paper_id != paper_id){
+				Paper *paper2 = db->getPaperById(author2->paper_id);
+				if (paper2 != NULL){
+					p_jrn2 = paper2->journal_id;
+					if (p_jrn == p_jrn2){
+						return Feature(203, 1);
+					}
+				}
+			}
+		}
+	}
+	return Feature(203, 0);
+
+}
+
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
 }
