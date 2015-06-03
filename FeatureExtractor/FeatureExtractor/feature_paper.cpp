@@ -117,10 +117,84 @@ Feature generateMeanPaperPublicationYear(DB *db, int author_id, int paper_id)
 	}
 }
 
+// Distance between major conference cluster and paper's conference cluster
+Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *this_paper = db->getPaperById(paper_id);
+	if (this_paper->conference_id == 0){
+		return Feature(205, MAGIC_NUMBER);
+	}
+	Conference *this_conference = db->getConferenceById(this_paper->conference_id);
+	if (this_conference == NULL) {
+		return Feature(205, MAGIC_NUMBER);
+	}
+
+	// Determine author's major conference cluster
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+	int cluster_count[100] = { 0, };
+
+	for (int i = 0; i < paper_authors.size(); i++){
+		PaperAuthor* paper_author = paper_authors[i];
+		Paper *paper = db->getPaperById(paper_author->paper_id);
+		if (paper == NULL || paper->conference_id == 0) continue;
+		Conference *conference = db->getConferenceById(paper->conference_id);
+		if (conference == NULL) continue;
+		cluster_count[conference->cluster]++;
+	}
+	int result = 0;
+	int this_conference_count = cluster_count[this_conference->cluster];
+	for (int i = 0; i < 100; i++){
+		if (cluster_count[i] > this_conference_count){
+			result++;
+		}
+	}
+
+	return Feature(205, result);
+}
+
+// Distance between major journal cluster and paper's journal cluster
+Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *this_paper = db->getPaperById(paper_id);
+	if (this_paper->journal_id == 0){
+		return Feature(206, MAGIC_NUMBER);
+	}
+	Journal *this_journal = db->getJournalById(this_paper->journal_id);
+	if (this_journal == NULL) {
+		return Feature(206, MAGIC_NUMBER);
+	}
+
+	// Determine author's major journal cluster
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+	int cluster_count[100] = { 0, };
+
+	for (int i = 0; i < paper_authors.size(); i++){
+		PaperAuthor* paper_author = paper_authors[i];
+		Paper *paper = db->getPaperById(paper_author->paper_id);
+		if (paper == NULL || paper->journal_id == 0) continue;
+		Journal *journal = db->getJournalById(paper->journal_id);
+		if (journal == NULL) continue;
+		cluster_count[journal->cluster]++;
+	}
+	int result = 0;
+	int this_journal_count = cluster_count[this_journal->cluster];
+	for (int i = 0; i < 100; i++){
+		if (cluster_count[i] > this_journal_count){
+			result++;
+		}
+	}
+
+	return Feature(206, result);
+}
+
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
 	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
 	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
 	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
 	f.push_back(generateMeanPaperPublicationYear(db, author_id, paper_id));
+	f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
+	f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
 }
