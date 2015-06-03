@@ -10,7 +10,6 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
 
-//	printf("size: %d\n" , paper_authors.size());
 	int p_year = paper->year;
 	if (p_year != 0){
 		int min_year = 2014;
@@ -18,12 +17,9 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 		int p_year2;
 		for (size_t i = 0; i < paper_authors.size(); i++){
 			PaperAuthor *author2 = paper_authors[i];
-//			printf("get author\n");
 			Paper *paper2 = db->getPaperById(author2->paper_id);
-//			printf("get paper\n");
 			if (paper2 != NULL){
 				p_year2 = paper2->year;
-//				printf("\t%d, %d\n", i, p_year2);
 				if (1500 < p_year2 && p_year2 < 2014){
 					if (p_year2 < min_year)
 						min_year = p_year2;
