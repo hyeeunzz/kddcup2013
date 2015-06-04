@@ -92,7 +92,7 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 
 }
 
-Feature generateMeanPaperPublicationYearofAuthor(DB *db, int author_id, int paper_id)
+Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -119,7 +119,7 @@ Feature generateMeanPaperPublicationYearofAuthor(DB *db, int author_id, int pape
 	}
 }
 
-Feature generateMeanPaperPublicationYearofCoauthor(DB *db, int author_id, int paper_id)
+Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -155,9 +155,9 @@ Feature generateMeanPaperPublicationYearofCoauthor(DB *db, int author_id, int pa
 
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
-	f.push_back(generateMeanPaperPublicationYearofAuthor(db, author_id, paper_id));
-	f.push_back(generateMeanPaperPublicationYearofCoauthor(db, author_id, paper_id));
+	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	f.push_back(generateMeanPaperPublicationYearofAuthorFeature(db, author_id, paper_id));
+	//f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
 }
