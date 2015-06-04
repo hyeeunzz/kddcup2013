@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "db.h"
 #include "feature.h"
+#include "feature_paper.h"
 #include <iostream>
 
 using namespace std;
@@ -19,6 +20,8 @@ int main(int argc, char *argv[])
 	if (argc == 2){
 		Dataset *train = loadDataset("Train", db);
 		Dataset *valid = loadDataset("Valid", db);
+		generatePaperDuplicateFeature(db, train->examples);
+		generatePaperDuplicateFeature(db, valid->examples);
 		printf("# of features : %d\n", train->examples[0]->X.size());
 		train->save();
 		valid->save();
