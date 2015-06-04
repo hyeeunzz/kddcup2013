@@ -336,16 +336,45 @@ Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int autho
 	}
 }
 
+Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int min_year = 2014;
+	int max_year = 1500;
+	for (size_t i = 0; i < paper_authors.size(); i++){
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 != NULL){
+			if (paper2->year > 1500 && paper2->year < 2014){
+				if (paper2->year < min_year)
+					min_year = paper2->year;
+				if (max_year < paper2->year)
+					max_year = paper2->year;
+			}
+		}
+	}
+
+	if (min_year < max_year) {
+		return Feature(211, max_year - min_year);
+	}
+	else {
+		return Feature(211, MAGIC_NUMBER);
+	}
+}
+
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
 	//f.push_back(generateMeanPaperPublicationYearofAuthorFeature(db, author_id, paper_id));
 	//f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
 	//f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
 	//f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
-	////f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
-	////f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
+	f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
+	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
 	//f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
 }
