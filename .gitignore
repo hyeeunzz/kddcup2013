@@ -1,5 +1,6 @@
 data/*.csv
 data/*.zip
+data/*.dat
 *.sdf
 *.suo
 *.opensdf

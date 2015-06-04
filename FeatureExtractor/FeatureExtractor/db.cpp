@@ -323,6 +323,24 @@ void parseConference(DB *db)
 	fclose(fp);
 }
 
+void parseConferenceCluster(DB *db)
+{
+	clock_t start_time = std::clock();
+	FILE *fp = getFile(db->datapath, "ConferenceCluster");
+
+	while (!feof(fp)){
+		int conference_id, cluster;
+		fscanf_s(fp, "%d,%d", &conference_id, &cluster);
+		if (feof(fp)) break;
+		Conference *conference = db->getConferenceById(conference_id);
+		if (conference != NULL){
+			conference->cluster = cluster;
+		}
+	}
+	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
+	fclose(fp);
+}
+
 void parseJournal(DB *db)
 {
 	clock_t start_time = std::clock();
@@ -387,13 +405,33 @@ void parseJournal(DB *db)
 	fclose(fp);
 }
 
+void parseJournalCluster(DB *db)
+{
+	clock_t start_time = std::clock();
+	FILE *fp = getFile(db->datapath, "JournalCluster");
+
+	while (!feof(fp)){
+		int journal_id, cluster;
+		fscanf_s(fp, "%d,%d", &journal_id, &cluster);
+		if (feof(fp)) break;
+		Journal *journal = db->getJournalById(journal_id);
+		if (journal != NULL){
+			journal->cluster = cluster;
+		}
+	}
+	fprintf(stderr, "ok (%d ms)\n", std::clock() - start_time);
+	fclose(fp);
+}
+
 DB *loadDB(char *datapath)
 {
 	DB *db = new DB();
 	strcpy_s(db->datapath, datapath);
 
 	parseConference(db);
+	parseConferenceCluster(db);
 	parseJournal(db);
+	parseJournalCluster(db);
 	parseAuthor(db);
 	parsePaper(db);
 	parsePaperAuthor(db);
