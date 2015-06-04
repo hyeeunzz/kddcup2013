@@ -285,6 +285,31 @@ Feature generatePaperTitleJaroDstanceFeature(DB *db, int author_id, int paper_id
 
 }
 
+Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	vector<double> differences;
+	int count = 0;
+	int diff = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++){
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 == NULL || paper->id == paper2->id) continue;
+		diff = abs(paper->year - paper2->year);
+		differences.push_back(diff);
+		count++;
+	}
+
+	if (count > 0){
+		return Feature(210, *max_element(differences.begin(), differences.end()));
+	}
+	else {
+		return Feature(210, MAGIC_NUMBER);
+	}
+}
+
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
@@ -296,4 +321,5 @@ void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 	f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
 	f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));
 	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));
+	f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
 }
