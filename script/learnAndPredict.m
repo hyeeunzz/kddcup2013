@@ -1,4 +1,4 @@
-function [ y2, model ] = learnAndPredict( X, y, X2, method )
+function [ y1, y2, model ] = learnAndPredict( X, y, X2, method )
 %LEARN Summary of this function goes here
 %   Detailed explanation goes here
 %% Train
@@ -20,10 +20,13 @@ fprintf('%f s\n', toc);
 tic;
 fprintf('Predicting... ');
 if method == 1 % Decision Tree
+    y1 = model.predict(X);
     y2 = model.predict(X2);
 elseif method == 2 % SVM (RBF kernel)
+    y1 = model.predict(X);
     y2 = model.predict(X2);
 elseif method == 3 %KNN
+    y1 = model.predict(X);
     y2 = model.predict(X2);
 else
     error('method error!');
