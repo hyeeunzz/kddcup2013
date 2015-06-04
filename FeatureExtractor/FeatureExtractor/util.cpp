@@ -254,3 +254,126 @@ std::vector<std::string> split(const std::string &str, const char *wschars)
 	// ran out of string; return list
 	return out;
 }
+
+void generateConferenceSimilarityMatrix(DB *db) {
+	const int MAX_CONF_COUNT = 5500;
+	int n = db->conferences.size(); // should be larger than MAX conference_id
+	int **result = (int**)calloc(n, sizeof(int*));
+	for (int i = 0; i < n; i++){
+		result[i] = (int*)calloc(n, sizeof(int));
+	}
+	int conference_index[MAX_CONF_COUNT] = { 0, };
+	for (int i = 0; i < n; i++){
+		conference_index[db->conferences[i]->id] = i;
+	}
+
+	int num_papers;
+	for (int i = 0; i < db->paper_author_index.size(); i += num_papers) {
+		PaperAuthorIndex *index = db->paper_author_index[i];
+		int author_id = index->author_id;
+		for (num_papers = 0; i + num_papers < db->paper_author_index.size() && db->paper_author_index[i]->author_id == db->paper_author_index[i + num_papers]->author_id; num_papers++);
+		// start counting
+		std::vector<int> conference_ids;
+		int conference_count[MAX_CONF_COUNT] = { 0, };
+		for (int j = i; j < i + num_papers; j++){
+			PaperAuthor *paper_author = db->paper_authors[db->paper_author_index[j]->paper_author_index];
+			Paper *paper = db->getPaperById(paper_author->paper_id);
+			if (paper == NULL || paper->conference_id == 0) continue;
+
+			if (std::find(conference_ids.begin(), conference_ids.end(), paper->conference_id) == conference_ids.end()){
+				conference_ids.push_back(paper->conference_id);
+			}
+			conference_count[paper->conference_id]++;
+		}
+		for (int j = 0; j < conference_ids.size(); j++){
+			for (int k = j+1; k < conference_ids.size(); k++){
+				int min_count = std::min(conference_count[conference_ids[j]], conference_count[conference_ids[k]]);
+				result[conference_index[conference_ids[j]]][conference_index[conference_ids[k]]] += min_count;
+				result[conference_index[conference_ids[k]]][conference_index[conference_ids[j]]] += min_count;
+			}
+		}
+	}
+
+	char path[512];
+	sprintf_s(path, "%s/ConferenceSimilarity.dat", db->datapath);
+	errno_t err;
+	FILE *fp;
+	if ((err = fopen_s(&fp, path, "wb")) != 0){
+		fprintf(stderr, "Cannot write %s\n", path);
+		exit(1);
+	}
+
+	fwrite(&n, sizeof(int), 1, fp);
+	for (int i = 0; i < n; i++){
+		int id = db->conferences[i]->id;
+		fwrite(&id, sizeof(int), 1, fp);
+	}
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			fwrite(&result[i][j], sizeof(int), 1, fp);
+		}
+	}
+	fclose(fp);
+}
+
+void generateJournalSimilarityMatrix(DB *db) {
+	const int MAX_JOUR_COUNT = 25600;
+	int n = db->journals.size(); // should be larger than MAX journal_id
+	int **result = (int**)calloc(n, sizeof(int*));
+	for (int i = 0; i < n; i++){
+		result[i] = (int*)calloc(n, sizeof(int));
+	}
+	int journal_index[MAX_JOUR_COUNT] = { 0, };
+	for (int i = 0; i < n; i++){
+		journal_index[db->journals[i]->id] = i;
+	}
+
+	int num_papers;
+	for (int i = 0; i < db->paper_author_index.size(); i += num_papers) {
+		PaperAuthorIndex *index = db->paper_author_index[i];
+		int author_id = index->author_id;
+		for (num_papers = 0; i + num_papers < db->paper_author_index.size() && db->paper_author_index[i]->author_id == db->paper_author_index[i + num_papers]->author_id; num_papers++);
+		// start counting
+		std::vector<int> journal_ids;
+		int journal_count[MAX_JOUR_COUNT] = { 0, };
+		for (int j = i; j < i + num_papers; j++){
+			PaperAuthor *paper_author = db->paper_authors[db->paper_author_index[j]->paper_author_index];
+			Paper *paper = db->getPaperById(paper_author->paper_id);
+			if (paper == NULL || paper->journal_id == 0) continue;
+
+			if (std::find(journal_ids.begin(), journal_ids.end(), paper->journal_id) == journal_ids.end()){
+				journal_ids.push_back(paper->journal_id);
+			}
+			journal_count[paper->journal_id]++;
+		}
+		for (int j = 0; j < journal_ids.size(); j++){
+			for (int k = j + 1; k < journal_ids.size(); k++){
+				int min_count = std::min(journal_count[journal_ids[j]], journal_count[journal_ids[k]]);
+				result[journal_index[journal_ids[j]]][journal_index[journal_ids[k]]] += min_count;
+				result[journal_index[journal_ids[k]]][journal_index[journal_ids[j]]] += min_count;
+			}
+		}
+	}
+
+	char path[512];
+	sprintf_s(path, "%s/JournalSimilarity.dat", db->datapath);
+	errno_t err;
+	FILE *fp;
+	if ((err = fopen_s(&fp, path, "wb")) != 0){
+		fprintf(stderr, "Cannot write %s\n", path);
+		exit(1);
+	}
+
+	fwrite(&n, sizeof(int), 1, fp);
+	for (int i = 0; i < n; i++){
+		int id = db->journals[i]->id;
+		fwrite(&id, sizeof(int), 1, fp);
+	}
+	for (int i = 0; i < n; i++){
+		for (int j = 0; j < n; j++){
+			fwrite(&result[i][j], sizeof(int), 1, fp);
+		}
+	}
+	fclose(fp);
+}
+

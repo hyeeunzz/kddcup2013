@@ -30,6 +30,7 @@ typedef struct _PaperAuthor {
 
 typedef struct _Conference {
 	int id;
+	int cluster;
 	std::string shortname;
 	std::string fullname;
 	std::string homepage;
@@ -37,6 +38,7 @@ typedef struct _Conference {
 
 typedef struct _Journal {
 	int id;
+	int cluster;
 	std::string shortname;
 	std::string fullname;
 	std::string homepage;

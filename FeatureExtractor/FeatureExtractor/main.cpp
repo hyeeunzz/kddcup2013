@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include "db.h"
 #include "feature.h"
+#include <iostream>
 
 using namespace std;
 
@@ -13,21 +14,22 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 	char *datapath = argv[1];
-
 	DB *db = loadDB(datapath);
-	Dataset *train = loadDataset("Train", db);
-	Dataset *valid = loadDataset("Valid", db);
-	printf("# of features : %d\n", train->examples[0]->X.size());
-	train->save();
-	valid->save();
+
+	if (argc == 2){
+		Dataset *train = loadDataset("Train", db);
+		Dataset *valid = loadDataset("Valid", db);
+		printf("# of features : %d\n", train->examples[0]->X.size());
+		train->save();
+		valid->save();
+	}
+	else if (argc == 3 && strcmp(argv[2], "-cj") == 0){
+		printf("Generate Conference&Journal Similarity matrix...");
+		generateConferenceSimilarityMatrix(db);
+		generateJournalSimilarityMatrix(db);
+	}
 
 	//generateSmallDomain(db);
-	//for (int i = 0; i < train->examples.size(); i++){
-	//	Author *author = db->getAuthorById(train->examples[i]->author_id);
-	//	printf("%10d %10d : %3d  %.1f  %.1f\n",
-	//		train->examples[i]->author_id, train->examples[i]->paper_id, train->examples[i]->y,
-	//		train->examples[i]->X[0], train->examples[i]->X[1]);
-	//}
 
 	return 0;
 }
