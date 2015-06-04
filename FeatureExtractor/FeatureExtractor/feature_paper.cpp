@@ -294,13 +294,13 @@ Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int autho
 	vector<double> differences;
 	int count = 0;
 	int diff = 0;
-	if (paper->year == 0 || paper->year > 2014) {
+	if (paper->year < 1500 || paper->year > 2014) {
 		return Feature(210, MAGIC_NUMBER);
 	}
 	for (size_t i = 0; i < paper_authors.size(); i++){
 		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
 		if (paper2 == NULL || paper->id == paper2->id) continue;
-		if (paper2->year > 0 && paper2->year < 2014) {
+		if (paper2->year > 1500 && paper2->year < 2014) {
 			diff = abs(paper->year - paper2->year);
 			differences.push_back(diff);
 			count++;
