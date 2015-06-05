@@ -17,6 +17,27 @@ bool file_exists(const char *filepath)
 	return true;
 }
 
+void handleLastFeatureMagicNumber(Dataset *dataset)
+{
+	int index = dataset->examples[0]->X.size() - 1;
+	double mean = 0.0;
+	int count = 0;
+	for (size_t j = 0; j < dataset->examples.size(); j++){
+		Example *example = dataset->examples[j];
+		if (example->X[index].value != MAGIC_NUMBER) {
+			mean += example->X[index].value;
+			count++;
+		}
+	}
+	mean /= (double)count;
+	for (size_t j = 0; j < dataset->examples.size(); j++){
+		Example *example = dataset->examples[j];
+		if (example->X[index].value == MAGIC_NUMBER) {
+			example->X[index].value = mean;
+		}
+	}
+}
+
 //void feature_generator(DB *db, Dataset *dataset)
 void generateSingleFeature(DB *db, Dataset *dataset, int feature_id, void(*feature_generator)(DB *, Dataset *)) {
 	// Check whether the feature file is already generated or not
@@ -34,30 +55,15 @@ void generateSingleFeature(DB *db, Dataset *dataset, int feature_id, void(*featu
 			fprintf(stderr, "Error occured while opening %s.feature.%d.csv!\n", dataset->filename);
 			exit(1);
 		}
-		fprintf(fp, "author_id,paper_id,feature\n");
+		// Feature generation
 		feature_generator(db, dataset);
-		// Handle magic numbers...
-		int index = dataset->examples[0]->X.size() - 1;
-		double mean = 0.0;
-		int count = 0;
-		for (size_t j = 0; j < dataset->examples.size(); j++){
-			Example *example = dataset->examples[j];
-			if (example->X[index].value != MAGIC_NUMBER) {
-				mean += example->X[index].value;
-				count++;
-			}
-		}
-		mean /= (double)count;
-		for (size_t j = 0; j < dataset->examples.size(); j++){
-			Example *example = dataset->examples[j];
-			if (example->X[index].value == MAGIC_NUMBER) {
-				example->X[index].value = mean;
-			}
-		}
-		//////////////////////
+		// Handle magic number
+		handleLastFeatureMagicNumber(dataset);
+		// save
+		fprintf(fp, "author_id,paper_id,feature,y\n");
 		for (int i = 0; i < dataset->examples.size(); i++){
 			Example *example = dataset->examples[i];
-			fprintf(fp, "%d,%d,%f\n", example->author_id, example->paper_id, example->X[index].value);
+			fprintf(fp, "%d,%d,%f,%d\n", example->author_id, example->paper_id, example->X[example->X.size() - 1].value, example->y);
 		}
 		fclose(fp);
 		printf("ok (%d ms)\n", std::clock() - start_time);
@@ -81,33 +87,18 @@ void generateSingleFeature(DB *db, Dataset *dataset, int feature_id, Feature (*f
 			fprintf(stderr, "Error occured while opening %s.feature.%d.csv!\n", dataset->filename);
 			exit(1);
 		}
-		fprintf(fp, "author_id,paper_id,feature\n");
+		// Feature generation
 		for (int i = 0; i < dataset->examples.size(); i++){
 			Example *example = dataset->examples[i];
 			example->X.push_back(feature_generator(db, example->author_id, example->paper_id));
 		}
-		// Handle magic numbers...
-		int i = dataset->examples[0]->X.size() - 1;
-		double mean = 0.0;
-		int count = 0;
-		for (size_t j = 0; j < dataset->examples.size(); j++){
-			Example *example = dataset->examples[j];
-			if (example->X[i].value != MAGIC_NUMBER) {
-				mean += example->X[i].value;
-				count++;
-			}
-		}
-		mean /= (double) count;
-		for (size_t j = 0; j < dataset->examples.size(); j++){
-			Example *example = dataset->examples[j];
-			if (example->X[i].value == MAGIC_NUMBER) {
-				example->X[i].value = mean;
-			}
-		}
-		//////////////////////
+		// Handle magic number
+		handleLastFeatureMagicNumber(dataset);
+		// Save
+		fprintf(fp, "author_id,paper_id,feature,y\n");
 		for (int i = 0; i < dataset->examples.size(); i++){
 			Example *example = dataset->examples[i];
-			fprintf(fp, "%d,%d,%f\n", example->author_id, example->paper_id, example->X[example->X.size() - 1].value);
+			fprintf(fp, "%d,%d,%f,%d\n", example->author_id, example->paper_id, example->X[example->X.size() - 1].value, example->y);
 		}
 		fclose(fp);
 		printf("ok (%d ms)\n", std::clock() - start_time);

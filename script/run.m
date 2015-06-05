@@ -3,15 +3,17 @@ TRAIN_FEATURE_PATH = '..\data\Train.feature.csv';
 DATA_DIRECTORY = '..\data';
 
 %% Extract features
-delete('..\data\*.feature.*');
+delete('..\data\*.predict.*');
 tic;
 fprintf('Extracting features... ');
 system(sprintf('%s %s', FEATURE_EXTRACTOR_EXE_PATH, DATA_DIRECTORY));
 fprintf('%f s\n', toc);
 
 %% Load feature data
-train_data = csvread(sprintf('%s\\Train.feature.csv', DATA_DIRECTORY), 1);
-valid_data = csvread(sprintf('%s\\Valid.feature.csv', DATA_DIRECTORY), 1);
+feature_list = [101:117 200:207 210 211 301]; % This should be set correctly
+
+train_data = loadFeature('Train', feature_list);
+valid_data = loadFeature('Valid', feature_list);
 R = randperm(size(train_data, 1));
 train_data = train_data(R, :);
 train_data = sortrows(train_data, 1);
