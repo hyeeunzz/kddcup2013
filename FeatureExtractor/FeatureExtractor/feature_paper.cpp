@@ -392,7 +392,6 @@ Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_
 
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-<<<<<<< HEAD
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
 	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
 	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
@@ -404,17 +403,4 @@ void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));
 	f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
 	f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
-=======
-	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
-	//f.push_back(generateMeanPaperPublicationYearofAuthorFeature(db, author_id, paper_id));
-	//f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
-	//f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
-	//f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
-	//f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
-	//f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
->>>>>>> 2da4c0ef6c59d93f4b3b07b157a9167ebc9928c5
 }
