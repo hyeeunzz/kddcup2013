@@ -413,8 +413,8 @@ void generatePaperFeatures(DB *db, Dataset *dataset)
 	generateSingleFeature(db, dataset, 205, generateMeanPaperPublicationYearofCoauthorFeature);
 	generateSingleFeature(db, dataset, 206, generateConferenceClusterFeature);
 	generateSingleFeature(db, dataset, 207, generateJournalClusterFeature);
-	//generateSingleFeature(db, dataset, 208, generatePaperTitleLevenshteinDstanceFeature);
-	//generateSingleFeature(db, dataset, 209, generatePaperTitleJaroDstanceFeature);
+	generateSingleFeature(db, dataset, 208, generatePaperTitleLevenshteinDstanceFeature);
+	generateSingleFeature(db, dataset, 209, generatePaperTitleJaroDstanceFeature);
 	generateSingleFeature(db, dataset, 210, generatePublicationYearDifferenceofAuthorPapersFeature);
 	generateSingleFeature(db, dataset, 211, generatePaperPublicationTimeGapFeature);
 }

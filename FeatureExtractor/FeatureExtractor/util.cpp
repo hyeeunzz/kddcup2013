@@ -96,6 +96,8 @@ double jaroDistance(const std::string &s1, const std::string &s2)
 
 	free(t1Matche);
 	free(t2Matche);
+	free(b1);
+	free(b2);
 
 	distanceJaro = (((double)compteMatching / l1) + ((double)compteMatching / l2) + ((compteMatching - compteTransposition / 2.0) / compteMatching)) / 3.0;
 
