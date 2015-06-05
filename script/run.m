@@ -10,7 +10,7 @@ system(sprintf('%s %s', FEATURE_EXTRACTOR_EXE_PATH, DATA_DIRECTORY));
 fprintf('%f s\n', toc);
 
 %% Load feature data
-feature_list = [101:117 200:207 210 211 301]; % This should be set correctly
+feature_list = [101:117 200:211]; % This should be set correctly
 
 train_data = loadFeature('Train', feature_list);
 valid_data = loadFeature('Valid', feature_list);
@@ -22,11 +22,14 @@ X = train_data(:, 3:(size(train_data,2)-1));
 y = train_data(:, end);
 X2 = valid_data(:, 3:(size(valid_data,2)-1));
 
+X  = preprocessing(X, 'Z');
+X2 = preprocessing(X2, 'Z');
+
 % X = basis_expansion(X);
 % X2 = basis_expansion(X2);
 
 %% Learn predict and output
-[y1, y2, model] = learnAndPredict(X, y, X2, 0); % decision tree
+[y1, y2, model] = learnAndPredict(X, y, X2, 1); % decision tree
 tic;
 fprintf('Training Output... ');
 fp_predict = fopen(sprintf('%s\\Train.feature.predict.csv', DATA_DIRECTORY), 'w');
