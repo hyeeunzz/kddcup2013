@@ -345,7 +345,12 @@ Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 
-	return Feature(108, paper_authors.size());
+	if (paper_authors.size() > 4) {
+		return Feature(108, 1);
+	}
+	else {
+		return Feature(108, -1);
+	}
 }
 
 Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper_id)
@@ -361,7 +366,12 @@ Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper
 		count += paper_authors2.size();
 	}
 
-	return Feature(109, (double)count/paper_authors.size());
+	if (count / paper_authors.size() > 40) {
+		return Feature(109, 1);
+	}
+	else {
+		return Feature(109, -1);
+	}
 }
 
 Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
@@ -369,7 +379,12 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, author_id);
 
-	return Feature(110, paper_authors.size());
+	if (paper_authors.size() > 1) {
+		return Feature(110, 1);
+	}
+	else {
+		return Feature(110, -1);
+	}
 }
 
 Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id)

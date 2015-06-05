@@ -98,6 +98,9 @@ Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, i
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
 
+	if (paper->year <= 1500 || paper->year >= 2014) {
+		return Feature(204, -1);
+	}
 	int year = 0;
 	int count = 0;
 	for (size_t i = 0; i < paper_authors.size(); i++) {
@@ -112,10 +115,15 @@ Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, i
 
 	if (count > 0) {
 		double avg_year = (double)year / count;
-		return Feature(204, abs(paper->year - avg_year));
+		if (abs(paper->year - avg_year) < 5) {
+			return Feature(204, 1);
+		}
+		else {
+			return Feature(204, -1);
+		}
 	}
 	else {
-		return Feature(204, MAGIC_NUMBER);
+		return Feature(204, -1);
 	}
 }
 
@@ -125,6 +133,9 @@ Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id,
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 
+	if (paper->year <= 1500 || paper->year >= 2014) {
+		return Feature(205, -1);
+	}
 	int year = 0;
 	int count = 0;
 	for (size_t i = 0; i < paper_authors.size(); i++) {
@@ -146,10 +157,15 @@ Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id,
 
 	if (count > 0) {
 		double avg_year = (double)year / count;
-		return Feature(205, abs(paper->year - avg_year));
+		if (abs(paper->year - avg_year) < 5) {
+			return Feature(205, 1);
+		}
+		else {
+			return Feature(205, -1);
+		}
 	}
 	else {
-		return Feature(205, MAGIC_NUMBER);
+		return Feature(205, -1);
 	}
 }
 
@@ -158,11 +174,11 @@ Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
 	if (this_paper->conference_id == 0){
-		return Feature(206, MAGIC_NUMBER);
+		return Feature(206, -1);
 	}
 	Conference *this_conference = db->getConferenceById(this_paper->conference_id);
 	if (this_conference == NULL) {
-		return Feature(206, MAGIC_NUMBER);
+		return Feature(206, -1);
 	}
 
 	// Determine author's major conference cluster
@@ -186,7 +202,12 @@ Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 		}
 	}
 
-	return Feature(206, result);
+	if (result < 2) {
+		return Feature(206, 1);
+	}
+	else {
+		return Feature(206, -1);
+	}
 }
 
 // Distance between major journal cluster and paper's journal cluster
@@ -194,11 +215,11 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
 	if (this_paper->journal_id == 0){
-		return Feature(207, MAGIC_NUMBER);
+		return Feature(207, -1);
 	}
 	Journal *this_journal = db->getJournalById(this_paper->journal_id);
 	if (this_journal == NULL) {
-		return Feature(207, MAGIC_NUMBER);
+		return Feature(207, -1);
 	}
 
 	// Determine author's major journal cluster
@@ -222,7 +243,12 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 		}
 	}
 
-	return Feature(207, result);
+	if (result < 25) {
+		return Feature(207, 1);
+	}
+	else {
+		return Feature(207, -1);
+	}
 }
 
 Feature generatePaperTitleLevenshteinDstanceFeature(DB *db, int author_id, int paper_id)
@@ -352,8 +378,8 @@ void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 	f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
 	f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
 	f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
-	//f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
-	//f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
+	f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));
+	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));
 	f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
 	f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
 }
