@@ -345,8 +345,14 @@ Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 {
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
+	int count = 0;
+	for (int i = 0; i < paper_authors.size(); i++){
+		if (db->getAuthorById(paper_authors[i]->author_id) != NULL){
+			count++;
+		}
+	}
 
-	return Feature(paper_authors.size());
+	return Feature(count);
 }
 
 //109
@@ -375,9 +381,15 @@ Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper
 Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 {
 	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, author_id);
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+	int count = 0;
+	for (int i = 0; i < paper_authors.size(); i++){
+		if (db->getPaperById(paper_authors[i]->paper_id) != NULL){
+			count++;
+		}
+	}
 
-	return Feature(paper_authors.size());
+	return Feature(count);
 }
 
 // 111

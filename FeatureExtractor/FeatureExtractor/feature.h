@@ -9,7 +9,7 @@
 
 typedef struct _Feature {
 	double value;
-	_Feature(int _value){
+	_Feature(double _value){
 		value = _value;
 	}
 } Feature;
