@@ -4,6 +4,27 @@
 using std::vector;
 using std::string;
 
+void generatePaperDuplicateFeature(DB *db, const std::vector<Example *> &examples)
+{
+	int start_index = -1;
+	int end_index = -1;
+	int current_author_id = -1;
+	for (size_t i = 0; i < examples.size(); i++) {
+		if (examples[i]->author_id != current_author_id) {
+			start_index = i;
+			current_author_id = examples[start_index]->author_id;
+			for (end_index = i; end_index < examples.size() && examples[end_index]->author_id == current_author_id; end_index++);
+		}
+		int count = 0;
+		int current_paper_id = examples[i]->paper_id;
+		for (int j = start_index; j < end_index; j++){
+			if (examples[j]->paper_id == current_paper_id) count++;
+			if (count >= 2) break;
+		}
+		examples[i]->X.push_back(Feature(200, (count >= 2) ? 1 : 0 ));
+	}
+}
+
 Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -371,6 +392,7 @@ Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_
 
 void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
+<<<<<<< HEAD
 	f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
 	f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
 	f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
@@ -382,4 +404,17 @@ void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));
 	f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
 	f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
+=======
+	//f.push_back(generatePaperPublicationTimeFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperConferenceFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperJournalFeature(db, author_id, paper_id));
+	//f.push_back(generateMeanPaperPublicationYearofAuthorFeature(db, author_id, paper_id));
+	//f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
+	//f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
+	//f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
+	//f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
+	//f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
+	//f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
+>>>>>>> 2da4c0ef6c59d93f4b3b07b157a9167ebc9928c5
 }

@@ -12,6 +12,10 @@ fprintf('%f s\n', toc);
 %% Load feature data
 train_data = csvread(sprintf('%s\\Train.feature.csv', DATA_DIRECTORY), 1);
 valid_data = csvread(sprintf('%s\\Valid.feature.csv', DATA_DIRECTORY), 1);
+R = randperm(size(train_data, 1));
+train_data = train_data(R, :);
+train_data = sortrows(train_data, 1);
+
 X = train_data(:, 3:(size(train_data,2)-1));
 y = train_data(:, end);
 X2 = valid_data(:, 3:(size(valid_data,2)-1));
@@ -20,7 +24,7 @@ X2 = valid_data(:, 3:(size(valid_data,2)-1));
 % X2 = basis_expansion(X2);
 
 %% Learn predict and output
-[y1, y2, model] = learnAndPredict(X, y, X2, 2); % decision tree
+[y1, y2, model] = learnAndPredict(X, y, X2, 1); % decision tree
 tic;
 fprintf('Training Output... ');
 fp_predict = fopen(sprintf('%s\\Train.feature.predict.csv', DATA_DIRECTORY), 'w');
