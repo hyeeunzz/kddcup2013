@@ -13,5 +13,5 @@ Feature generatePaperAuthorCountFeature(DB *db, int author_id, int paper_id) {
 
 void generateOtherFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	//f.push_back(generatePaperAuthorCountFeature(db, author_id, paper_id));
+	f.push_back(generatePaperAuthorCountFeature(db, author_id, paper_id));
 }

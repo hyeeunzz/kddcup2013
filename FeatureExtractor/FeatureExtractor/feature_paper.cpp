@@ -373,8 +373,8 @@ void generatePaperFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 	//f.push_back(generateMeanPaperPublicationYearofCoauthorFeature(db, author_id, paper_id));
 	//f.push_back(generateConferenceClusterFeature(db, author_id, paper_id));
 	//f.push_back(generateJournalClusterFeature(db, author_id, paper_id));
-	f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
-	f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
+	//f.push_back(generatePaperTitleLevenshteinDstanceFeature(db, author_id, paper_id));//안돌아감
+	//f.push_back(generatePaperTitleJaroDstanceFeature(db, author_id, paper_id));//안돌아감
 	//f.push_back(generatePublicationYearDifferenceofAuthorPapersFeature(db, author_id, paper_id));
 	//f.push_back(generatePaperPublicationTimeGapFeature(db, author_id, paper_id));
 }
