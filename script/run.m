@@ -24,7 +24,7 @@ X2 = valid_data(:, 3:(size(valid_data,2)-1));
 % X2 = basis_expansion(X2);
 
 %% Learn predict and output
-[y1, y2, model] = learnAndPredict(X, y, X2, 1); % decision tree
+[y1, y2, model] = learnAndPredict(X, y, X2, 0); % decision tree
 tic;
 fprintf('Training Output... ');
 fp_predict = fopen(sprintf('%s\\Train.feature.predict.csv', DATA_DIRECTORY), 'w');
