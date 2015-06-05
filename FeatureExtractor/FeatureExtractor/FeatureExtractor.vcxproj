@@ -147,6 +147,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="command.cpp" />
     <ClCompile Include="db.cpp" />
     <ClCompile Include="feature.cpp" />
     <ClCompile Include="feature_author.cpp" />
@@ -156,6 +157,7 @@
     <ClCompile Include="util.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="command.h" />
     <ClInclude Include="db.h" />
     <ClInclude Include="feature.h" />
     <ClInclude Include="feature_author.h" />

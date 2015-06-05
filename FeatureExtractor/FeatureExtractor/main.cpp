@@ -4,6 +4,7 @@
 #include "feature.h"
 #include "feature_paper.h"
 #include <iostream>
+#include "command.h"
 
 using namespace std;
 
@@ -30,6 +31,9 @@ int main(int argc, char *argv[])
 		printf("Generate Conference&Journal Similarity matrix...");
 		generateConferenceSimilarityMatrix(db);
 		generateJournalSimilarityMatrix(db);
+	}
+	else if (argc == 3 && strcmp(argv[2], "-s") == 0){
+		executeInterpreter(db);
 	}
 
 	//generateSmallDomain(db);
