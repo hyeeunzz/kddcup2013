@@ -1,6 +1,6 @@
 #ifndef _FEATURE_AUTHOR_H_
 #include "feature.h"
 
-void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id);
+void generateAuthorFeatures(DB *db, Dataset *dataset);
 
 #endif

@@ -8,10 +8,8 @@
 #define MAGIC_NUMBER 856362
 
 typedef struct _Feature {
-	int id;
 	double value;
-	_Feature(int _id, int _value){
-		id = _id;
+	_Feature(int _value){
 		value = _value;
 	}
 } Feature;
@@ -30,9 +28,12 @@ public:
 	DB *db;
 	char filename[128];
 	std::vector<Example *> examples;
-	void save();
 };
 
+bool file_exists(const char *filepath);
 Dataset* loadDataset(char *filename, DB *db);
+void generateFeatures(DB *db, Dataset *dataset);
+void generateSingleFeature(DB *db, Dataset *dataset, int feature_id, void(*feature_generator)(DB *, Dataset *));
+void generateSingleFeature(DB *db, Dataset *dataset, int feature_id, Feature(*feature_generator)(DB *, int, int));
 
 #endif

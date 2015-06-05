@@ -4,7 +4,7 @@
 using std::vector;
 using std::string;
 
-// Levenshtein distance between author's affiliation and paper_author's affiliation
+// 101. Levenshtein distance between author's affiliation and paper_author's affiliation
 Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -27,14 +27,14 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 	}
 
 	if (count > 0){
-		return Feature(101, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(101, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// Levenshtein distance between author's affiliation and coauthor's affiliation
+// 102. Levenshtein distance between author's affiliation and coauthor's affiliation
 Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id){
 	vector<PaperAuthor*> paper_authors;
 	Author *author = db->getAuthorById(author_id);
@@ -58,10 +58,10 @@ Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author
 	}
 
 	if (count > 0) {
-		return Feature(102, *min_element(distances.begin(), distances.end()));
+		return Feature(*min_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(102, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -88,10 +88,10 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 	}
 
 	if (count > 0){
-		return Feature(103, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(103, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -163,10 +163,10 @@ Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int auth
 	}
 
 	if (count > 0){
-		return Feature(104, *min_element(distances.begin(), distances.end()));
+		return Feature(*min_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(104, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -195,10 +195,10 @@ Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id
 	}
 
 	if (count > 0){
-		return Feature(105, *min_element(distances.begin(), distances.end()));
+		return Feature(*min_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(105, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -272,10 +272,10 @@ Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, in
 	}
 
 	if (count > 0){
-		return Feature(106, *min_element(distances.begin(), distances.end()));
+		return Feature(*min_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(106, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -332,10 +332,10 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 	}
 
 	if (count > 0){
-		return Feature(107, *min_element(distances.begin(), distances.end()));
+		return Feature(*min_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(107, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -346,10 +346,10 @@ Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 
 	if (paper_authors.size() > 4) {
-		return Feature(108, 1);
+		return Feature(1);
 	}
 	else {
-		return Feature(108, -1);
+		return Feature(-1);
 	}
 }
 
@@ -367,10 +367,10 @@ Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper
 	}
 
 	if (count / paper_authors.size() > 40) {
-		return Feature(109, 1);
+		return Feature(1);
 	}
 	else {
-		return Feature(109, -1);
+		return Feature(-1);
 	}
 }
 
@@ -380,10 +380,10 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 	db->getPaperAuthorsByPaperId(paper_authors, author_id);
 
 	if (paper_authors.size() > 1) {
-		return Feature(110, 1);
+		return Feature(1);
 	}
 	else {
-		return Feature(110, -1);
+		return Feature(-1);
 	}
 }
 
@@ -409,10 +409,10 @@ Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int 
 	}
 
 	if (count > 0){
-		return Feature(111, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(111, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -439,10 +439,10 @@ Feature generateCoauthorAffiliationJaroDistanceFeature(DB *db, int author_id, in
 	}
 
 	if (count > 0) {
-		return Feature(112, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(112, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -468,10 +468,10 @@ Feature generateAuthorNameJaroDistanceFeature(DB *db, int author_id, int paper_i
 	}
 
 	if (count > 0){
-		return Feature(113, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(113, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -542,10 +542,10 @@ Feature generateAuthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, 
 	}
 
 	if (count > 0){
-		return Feature(114, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(114, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -573,10 +573,10 @@ Feature generateAuthorCoauthorNameJaroDistanceFeature(DB *db, int author_id, int
 	}
 
 	if (count > 0){
-		return Feature(115, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(115, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -650,10 +650,10 @@ Feature generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(DB *db, int aut
 	}
 
 	if (count > 0){
-		return Feature(116, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(116, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
@@ -709,30 +709,30 @@ Feature generateAuthorCoauthorLastNameJaroDistanceFeature(DB *db, int author_id,
 	}
 
 	if (count > 0){
-		return Feature(117, *max_element(distances.begin(), distances.end()));
+		return Feature(*max_element(distances.begin(), distances.end()));
 	}
 	else {
-		return Feature(117, MAGIC_NUMBER);
+		return Feature(MAGIC_NUMBER);
 	}
 }
 
-void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
+void generateAuthorFeatures(DB *db, Dataset *dataset)
 {
-	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorAbbreviatedNameLevenstheinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorNameLevstheinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
-	f.push_back(generateAverageNumberofPapersofCoauthor(db, author_id, paper_id));
-	f.push_back(generateNumberofPapersofAuthor(db, author_id, paper_id));
-	f.push_back(generateAuthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateCoauthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorNameJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorNameJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
-	f.push_back(generateAuthorCoauthorLastNameJaroDistanceFeature(db, author_id, paper_id));
+	generateSingleFeature(db, dataset, 101, generateAuthorAffiliationLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 102, generateCoauthorAffiliationLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 103, generateAuthorNameLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 104, generateAuthorAbbreviatedNameLevenstheinDistanceFeature);
+	generateSingleFeature(db, dataset, 105, generateAuthorCoauthorNameLevstheinDistanceFeature);
+	generateSingleFeature(db, dataset, 106, generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature);
+	generateSingleFeature(db, dataset, 107, generateAuthorCoauthorLastNameLevestheinDistanceFeature);
+	generateSingleFeature(db, dataset, 108, generateTotalNumberofCoauthors);
+	generateSingleFeature(db, dataset, 109, generateAverageNumberofPapersofCoauthor);
+	generateSingleFeature(db, dataset, 110, generateNumberofPapersofAuthor);
+	generateSingleFeature(db, dataset, 111, generateAuthorAffiliationJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 112, generateCoauthorAffiliationJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 113, generateAuthorNameJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 114, generateAuthorAbbreviatedNameJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 115, generateAuthorCoauthorNameJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 116, generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature);
+	generateSingleFeature(db, dataset, 117, generateAuthorCoauthorLastNameJaroDistanceFeature);
 }
