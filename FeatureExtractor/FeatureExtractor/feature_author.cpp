@@ -345,7 +345,12 @@ Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
 
-	return Feature(108, paper_authors.size());
+	if (paper_authors.size() > 4) {
+		return Feature(108, 1);
+	}
+	else {
+		return Feature(108, -1);
+	}
 }
 
 Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper_id)
@@ -361,7 +366,12 @@ Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper
 		count += paper_authors2.size();
 	}
 
-	return Feature(109, (double)count/paper_authors.size());
+	if (count / paper_authors.size() > 40) {
+		return Feature(109, 1);
+	}
+	else {
+		return Feature(109, -1);
+	}
 }
 
 Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
@@ -369,7 +379,12 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsByPaperId(paper_authors, author_id);
 
-	return Feature(110, paper_authors.size());
+	if (paper_authors.size() > 1) {
+		return Feature(110, 1);
+	}
+	else {
+		return Feature(110, -1);
+	}
 }
 
 Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id)
@@ -703,21 +718,21 @@ Feature generateAuthorCoauthorLastNameJaroDistanceFeature(DB *db, int author_id,
 
 void generateAuthorFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
 {
-	//f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorAbbreviatedNameLevenstheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorNameLevstheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
-	//f.push_back(generateAverageNumberofPapersofCoauthor(db, author_id, paper_id));
-	//f.push_back(generateNumberofPapersofAuthor(db, author_id, paper_id));
-	//f.push_back(generateAuthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateCoauthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorNameJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorNameJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
-	//f.push_back(generateAuthorCoauthorLastNameJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateCoauthorAffiliationLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorNameLevenshteinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorAbbreviatedNameLevenstheinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorNameLevstheinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorLastNameLevestheinDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateTotalNumberofCoauthors(db, author_id, paper_id));
+	f.push_back(generateAverageNumberofPapersofCoauthor(db, author_id, paper_id));
+	f.push_back(generateNumberofPapersofAuthor(db, author_id, paper_id));
+	f.push_back(generateAuthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateCoauthorAffiliationJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorNameJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorNameJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(db, author_id, paper_id));
+	f.push_back(generateAuthorCoauthorLastNameJaroDistanceFeature(db, author_id, paper_id));
 }

@@ -8,7 +8,12 @@ Feature generatePaperAuthorCountFeature(DB *db, int author_id, int paper_id) {
 	vector<PaperAuthor*> paper_authors;
 	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
 
-	return Feature(301, paper_authors.size());
+	if (paper_authors.size() > 1) {
+		return Feature(301, 1);
+	}
+	else {
+		return Feature(301, -1);
+	}
 }
 
 void generateOtherFeatures(FeatureList &f, DB *db, int author_id, int paper_id)
