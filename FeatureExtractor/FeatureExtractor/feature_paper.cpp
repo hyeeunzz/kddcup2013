@@ -463,6 +463,166 @@ Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_
 	}
 }
 
+//214. Levenshtein distance between paper's conference fullname and conference fullnames of target author
+Feature generateLevenshteinDistancePaperConferenceFullNameFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	if (paper->conference_id < 1) {
+		return Feature(MAGIC_NUMBER);
+	}
+
+	Conference *conference = db->getConferenceById(paper->conference_id);
+
+	vector<double> distances;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 != NULL && paper->id != paper2->id) {
+			Conference *conference2 = db->getConferenceById(paper2->conference_id);
+			if (conference != NULL && conference2 != NULL) {
+				if (conference->fullname.length() > 0 && conference2->fullname.length() > 0) {
+					string conference_name(conference->fullname);
+					string conference2_name(conference2->fullname);
+					stringToLower(conference_name);
+					stringToLower(conference2_name);
+					distances.push_back(levenshteinDistance(conference_name, conference2_name));
+					count++;
+				}
+			}
+		}
+	}
+
+	if (count > 0){
+		return Feature(*min_element(distances.begin(), distances.end()));
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
+//215. Levenshtein distance between paper's journal fullname and journal fullnames of target author
+Feature generateLevenshteinDistancePaperJournalFullNameFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	if (paper->journal_id < 1) {
+		return Feature(MAGIC_NUMBER);
+	}
+
+	Journal *journal = db->getJournalById(paper->journal_id);
+
+	vector<double> distances;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 != NULL && paper->id != paper2->id) {
+			Journal *journal2 = db->getJournalById(paper2->journal_id);
+			if (journal != NULL && journal2 != NULL) {
+				if (journal->fullname.length() > 0 && journal2->fullname.length() > 0) {
+					string journal_name(journal->fullname);
+					string journal2_name(journal2->fullname);
+					stringToLower(journal_name);
+					stringToLower(journal2_name);
+					distances.push_back(levenshteinDistance(journal_name, journal2_name));
+					count++;
+				}
+			}
+		}
+	}
+
+	if (count > 0){
+		return Feature(*min_element(distances.begin(), distances.end()));
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
+//216. Levenshtein distance between paper's conference shortname and conference shortnames of target author
+Feature generateLevenshteinDistancePaperConferenceShortNameFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	if (paper->conference_id < 1) {
+		return Feature(MAGIC_NUMBER);
+	}
+
+	Conference *conference = db->getConferenceById(paper->conference_id);
+
+	vector<double> distances;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 != NULL && paper->id != paper2->id) {
+			Conference *conference2 = db->getConferenceById(paper2->conference_id);
+			if (conference != NULL && conference2 != NULL) {
+				if (conference->shortname.length() > 0 && conference2->shortname.length() > 0) {
+					string conference_name(conference->shortname);
+					string conference2_name(conference2->shortname);
+					stringToLower(conference_name);
+					stringToLower(conference2_name);
+					distances.push_back(levenshteinDistance(conference_name, conference2_name));
+					count++;
+				}
+			}
+		}
+	}
+
+	if (count > 0){
+		return Feature(*min_element(distances.begin(), distances.end()));
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
+//217. Levenshtein distance between paper's journal shortname and journal shortnames of target author
+Feature generateLevenshteinDistancePaperJournalShortNameFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	if (paper->journal_id < 1) {
+		return Feature(MAGIC_NUMBER);
+	}
+
+	Journal *journal = db->getJournalById(paper->journal_id);
+
+	vector<double> distances;
+	int count = 0;
+	for (size_t i = 0; i < paper_authors.size(); i++) {
+		Paper *paper2 = db->getPaperById(paper_authors[i]->paper_id);
+		if (paper2 != NULL && paper->id != paper2->id) {
+			Journal *journal2 = db->getJournalById(paper2->journal_id);
+			if (journal != NULL && journal2 != NULL) {
+				if (journal->shortname.length() > 0 && journal2->shortname.length() > 0) {
+					string journal_name(journal->shortname);
+					string journal2_name(journal2->shortname);
+					stringToLower(journal_name);
+					stringToLower(journal2_name);
+					distances.push_back(levenshteinDistance(journal_name, journal2_name));
+					count++;
+				}
+			}
+		}
+	}
+
+	if (count > 0){
+		return Feature(*min_element(distances.begin(), distances.end()));
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
 void generatePaperFeatures(DB *db, Dataset *dataset)
 {
 	generateSingleFeature(db, dataset, 200, generatePaperDuplicateFeature);
@@ -479,4 +639,8 @@ void generatePaperFeatures(DB *db, Dataset *dataset)
 	generateSingleFeature(db, dataset, 211, generatePaperTitleJaroDstanceFeature);
 	generateSingleFeature(db, dataset, 212, generatePublicationYearDifferenceofAuthorPapersFeature);
 	generateSingleFeature(db, dataset, 213, generatePaperPublicationTimeGapFeature);
+	generateSingleFeature(db, dataset, 214, generateLevenshteinDistancePaperConferenceFullNameFeature);
+	generateSingleFeature(db, dataset, 215, generateLevenshteinDistancePaperJournalFullNameFeature);
+	generateSingleFeature(db, dataset, 216, generateLevenshteinDistancePaperConferenceShortNameFeature);
+	generateSingleFeature(db, dataset, 217, generateLevenshteinDistancePaperJournalShortNameFeature);
 }
