@@ -15,6 +15,7 @@ typedef struct _Feature {
 } Feature;
 typedef std::vector<Feature> FeatureList;
 typedef int Label;
+typedef std::_Vector_iterator<std::_Vector_val<std::_Simple_types<double>>> DoubleIterator;
 
 typedef struct _Example {
 	int author_id;

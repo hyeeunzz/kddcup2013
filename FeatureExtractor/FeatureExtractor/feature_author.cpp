@@ -4,8 +4,8 @@
 using std::vector;
 using std::string;
 
-// 101. Levenshtein distance between author's affiliation and paper_author's affiliation
-Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between author's affiliation and paper_author's affiliation
+Feature generateAuthorAffiliationDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -21,21 +21,22 @@ Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_i
 			string author2_affiliation(author2->affiliation);
 			stringToLower(author_affiliation);
 			stringToLower(author2_affiliation);
-			distances.push_back(levenshteinDistance(author_affiliation, author2_affiliation));
+			distances.push_back(distance_function(author_affiliation, author2_affiliation));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 102. Levenshtein distance between author's affiliation and coauthor's affiliation
-Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id){
+// Distance between author's affiliation and coauthor's affiliation
+Feature generateCoauthorAffiliationDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
+{
 	vector<PaperAuthor*> paper_authors;
 	Author *author = db->getAuthorById(author_id);
 
@@ -52,21 +53,21 @@ Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author
 			string coauthor_affiliation(coauthor->affiliation);
 			stringToLower(author_affiliation);
 			stringToLower(coauthor_affiliation);
-			distances.push_back(levenshteinDistance(author_affiliation, coauthor_affiliation));
+			distances.push_back(distance_function(author_affiliation, coauthor_affiliation));
 			count++;
 		}
 	}
 
 	if (count > 0) {
-		return Feature(*min_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 103. Levenshtein distance between author's name and paper_author's name
-Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between author's name and paper_author's name
+Feature generateAuthorNameDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -82,21 +83,21 @@ Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int 
 			string name2(author2->name);
 			stringToLower(name);
 			stringToLower(name2);
-			distances.push_back(levenshteinDistance(name, name2));
+			distances.push_back(distance_function(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 104. Levenshtein distance between abbrevation of author's name and paper_author's name
-Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between abbrevation of author's name and paper_author's name
+Feature generateAuthorAbbreviatedNameDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -111,11 +112,7 @@ Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int auth
 
 	if (author->name.length() > 0) {
 		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				abbname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') {
+			if (author->name[j] == ' ') {
 				abbname2[count2] = author->name[j];
 				count2++;
 				first = true;
@@ -128,20 +125,17 @@ Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int auth
 				}
 			}
 		}
+		abbname[count2] = NULL;
 	}
 	string name(abbname);
-	
+
 	for (size_t i = 0; i < paper_authors.size(); i++){
 		PaperAuthor *author2 = paper_authors[i];
 		if (author->name.length() > 0 && author2->name.length() > 0) {
 			count2 = 0;
 			first = true;
 			for (size_t j = 0; j < author2->name.length(); j++){
-				if (author2->name[j] == NULL) {
-					abbname2[count2] = NULL;
-					break;
-				}
-				else if (author2->name[j] == ' ') {
+				if (author2->name[j] == ' ') {
 					abbname2[count2] = author2->name[j];
 					count2++;
 					first = true;
@@ -154,24 +148,25 @@ Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int auth
 					}
 				}
 			}
+			abbname2[count2] = NULL;
 			string name2(abbname2);
 			stringToLower(name);
 			stringToLower(name2);
-			distances.push_back(levenshteinDistance(name, name2));
+			distances.push_back(distance_function(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*min_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 105. Levenshtein distance between author's name and coauthor's name
-Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between author's name and coauthor's name
+Feature generateAuthorCoauthorNameDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -189,21 +184,21 @@ Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id
 			string name2(coauthor->name);
 			stringToLower(name);
 			stringToLower(name2);
-			distances.push_back(levenshteinDistance(name, name2));
+			distances.push_back(distance_function(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*min_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 106. Levsthein distance between abbreviations of author's name and coauthor's name
-Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between abbreviations of author's name and coauthor's name
+Feature generateAuthorCoauthorAbbreviatedNameDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -218,11 +213,7 @@ Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, in
 
 	if (author->name.length() > 0) {
 		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				abbname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') {
+			if (author->name[j] == ' ') {
 				abbname2[count2] = author->name[j];
 				count2++;
 				first = true;
@@ -235,6 +226,7 @@ Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, in
 				}
 			}
 		}
+		abbname[count2] = NULL;
 	}
 	string name(abbname);
 
@@ -247,11 +239,7 @@ Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, in
 			count2 = 0;
 			first = true;
 			for (size_t j = 0; j < coauthor->name.length(); j++){
-				if (coauthor->name[j] == NULL) {
-					abbname2[count2] = NULL;
-					break;
-				}
-				else if (coauthor->name[j] == ' ') {
+				if (coauthor->name[j] == ' ') {
 					abbname2[count2] = coauthor->name[j];
 					count2++;
 					first = true;
@@ -264,24 +252,25 @@ Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, in
 					}
 				}
 			}
+			abbname2[count2] = NULL;
 			string name2(abbname2);
 			stringToLower(name);
 			stringToLower(name2);
-			distances.push_back(levenshteinDistance(name, name2));
+			distances.push_back(distance_function(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*min_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
 }
 
-// 107. Levenshtein distance between author's last name and coauthor's last name
-Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int author_id, int paper_id)
+// Distance between author's last name and coauthor's last name
+Feature generateAuthorCoauthorLastNameDistanceFeature(DB *db, int author_id, int paper_id, double(*distance_function)(const std::string &, const std::string &), DoubleIterator(*filter)(DoubleIterator, DoubleIterator))
 {
 	Author *author = db->getAuthorById(author_id);
 	vector<PaperAuthor*> paper_authors;
@@ -294,16 +283,13 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 	char lastname2[96];
 	if (author->name.length() > 0) {
 		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				lastname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') count2 = 0;
+			if (author->name[j] == ' ') count2 = 0;
 			else {
 				lastname[count2] = author->name[j];
 				count2++;
 			}
 		}
+		lastname[count2] = NULL;
 	}
 	for (size_t i = 0; i < paper_authors.size(); i++){
 		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
@@ -313,31 +299,69 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 		if (author->name.length() > 0 && coauthor->name.length() > 0) {
 			count2 = 0;
 			for (size_t j = 0; j < coauthor->name.length(); j++){
-				if (coauthor->name[j] == NULL) {
-					lastname2[count2] = NULL;
-					break;
-				}
-				else if (coauthor->name[j] == ' ') count2 = 0;
+				if (coauthor->name[j] == ' ') count2 = 0;
 				else {
 					lastname2[count2] = coauthor->name[j];
 					count2++;
 				}
 			}
+			lastname2[count2] = NULL;
 			string name(lastname);
 			string name2(lastname2);
 			stringToLower(name);
 			stringToLower(name2);
-			distances.push_back(levenshteinDistance(name, name2));
+			distances.push_back(distance_function(name, name2));
 			count++;
 		}
 	}
 
 	if (count > 0){
-		return Feature(*min_element(distances.begin(), distances.end()));
+		return Feature(*filter(distances.begin(), distances.end()));
 	}
 	else {
 		return Feature(MAGIC_NUMBER);
 	}
+}
+
+// 101. Levenshtein distance between author's affiliation and paper_author's affiliation
+Feature generateAuthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorAffiliationDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::max_element);
+}
+
+// 102. Levenshtein distance between author's affiliation and coauthor's affiliation
+Feature generateCoauthorAffiliationLevenshteinDistanceFeature(DB *db, int author_id, int paper_id){
+	return generateCoauthorAffiliationDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::min_element);
+}
+
+// 103. Levenshtein distance between author's name and paper_author's name
+Feature generateAuthorNameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorNameDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::max_element);
+}
+
+// 104. Levenshtein distance between abbrevation of author's name and paper_author's name
+Feature generateAuthorAbbreviatedNameLevenstheinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorAbbreviatedNameDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::min_element);
+}
+
+// 105. Levenshtein distance between author's name and coauthor's name
+Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorCoauthorNameDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::min_element);
+}
+
+// 106. Levsthein distance between abbreviations of author's name and coauthor's name
+Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorCoauthorAbbreviatedNameDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::min_element);
+}
+
+// 107. Levenshtein distance between author's last name and coauthor's last name
+Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int author_id, int paper_id)
+{
+	return generateAuthorCoauthorLastNameDistanceFeature(db, author_id, paper_id, levenshteinDistance, std::min_element);
 }
 
 //108. Total number of coathors of target author
@@ -395,337 +419,42 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 // 111. Jaro distance between author's affiliation and paper_author's affiliation
 Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
-
-	vector<double> distances;
-	int count = 0;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		PaperAuthor *author2 = paper_authors[i];
-		if (author->affiliation.length() > 0 && author2->affiliation.length() > 0) {
-			string author_affiliation(author->affiliation);
-			string author2_affiliation(author2->affiliation);
-			stringToLower(author_affiliation);
-			stringToLower(author2_affiliation);
-			distances.push_back(jaroDistance(author_affiliation, author2_affiliation));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorAffiliationDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 112. Jaro distance between author's affiliation and coauthor's affiliation
 Feature generateCoauthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id){
-	vector<PaperAuthor*> paper_authors;
-	Author *author = db->getAuthorById(author_id);
-
-	vector<double> distances;
-	int count = 0;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
-		if (coauthor == NULL || author->id == coauthor->id){
-			continue;
-		}
-		if (author->affiliation.length() > 0 && coauthor->affiliation.length() > 0) {
-			string author_affiliation(author->affiliation);
-			string coauthor_affiliation(coauthor->affiliation);
-			stringToLower(author_affiliation);
-			stringToLower(coauthor_affiliation);
-			distances.push_back(jaroDistance(author_affiliation, coauthor_affiliation));
-			count++;
-		}
-	}
-
-	if (count > 0) {
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateCoauthorAffiliationDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 113. Jaro distance between author's name and paper_author's name
 Feature generateAuthorNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
-
-	vector<double> distances;
-	int count = 0;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		PaperAuthor *author2 = paper_authors[i];
-		if (author->name.length() > 0 && author2->name.length() > 0) {
-			string name(author->name);
-			string name2(author2->name);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(jaroDistance(name, name2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorNameDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 114. Jaro distance between abbrevation of author's name and paper_author's name
 Feature generateAuthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsById(paper_authors, paper_id, author_id);
-	vector<double> distances;
-
-	int count = 0;
-	int count2 = 0;
-	char abbname[96];
-	char abbname2[96];
-	bool first = true;
-
-	if (author->name.length() > 0) {
-		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				abbname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') {
-				abbname2[count2] = author->name[j];
-				count2++;
-				first = true;
-			}
-			else {
-				if (first) {
-					abbname[count2] = author->name[j];
-					count2++;
-					first = false;
-				}
-			}
-		}
-	}
-	string name(abbname);
-
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		PaperAuthor *author2 = paper_authors[i];
-		if (author->name.length() > 0 && author2->name.length() > 0) {
-			count2 = 0;
-			first = true;
-			for (size_t j = 0; j < author2->name.length(); j++){
-				if (author2->name[j] == NULL) {
-					abbname2[count2] = NULL;
-					break;
-				}
-				else if (author2->name[j] == ' ') {
-					abbname2[count2] = author2->name[j];
-					count2++;
-					first = true;
-				}
-				else {
-					if (first) {
-						abbname2[count2] = author2->name[j];
-						count2++;
-						first = false;
-					}
-				}
-			}
-			string name2(abbname2);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(jaroDistance(name, name2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorAbbreviatedNameDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 115. Jaro distance between author's name and coauthor's name
 Feature generateAuthorCoauthorNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-
-	vector<double> distances;
-	int count = 0;
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
-		if (coauthor == NULL || author->id == coauthor->id){
-			continue;
-		}
-		if (author->name.length() > 0 && coauthor->name.length() > 0) {
-			string name(author->name);
-			string name2(coauthor->name);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(jaroDistance(name, name2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorCoauthorNameDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 116. Jaro distance between abbreviations of author's name and coauthor's name
 Feature generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-	vector<double> distances;
-
-	int count = 0;
-	int count2 = 0;
-	char abbname[96];
-	char abbname2[96];
-	bool first = true;
-
-	if (author->name.length() > 0) {
-		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				abbname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') {
-				abbname2[count2] = author->name[j];
-				count2++;
-				first = true;
-			}
-			else {
-				if (first) {
-					abbname[count2] = author->name[j];
-					count2++;
-					first = false;
-				}
-			}
-		}
-	}
-	string name(abbname);
-
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
-		if (coauthor == NULL || author->id == coauthor->id){
-			continue;
-		}
-		if (author->name.length() > 0 && coauthor->name.length() > 0) {
-			count2 = 0;
-			first = true;
-			for (size_t j = 0; j < coauthor->name.length(); j++){
-				if (coauthor->name[j] == NULL) {
-					abbname2[count2] = NULL;
-					break;
-				}
-				else if (coauthor->name[j] == ' ') {
-					abbname2[count2] = coauthor->name[j];
-					count2++;
-					first = true;
-				}
-				else {
-					if (first) {
-						abbname2[count2] = coauthor->name[j];
-						count2++;
-						first = false;
-					}
-				}
-			}
-			string name2(abbname2);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(jaroDistance(name, name2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorCoauthorAbbreviatedNameDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 // 117. Jaro distance between author's last name and coauthor's last name
 Feature generateAuthorCoauthorLastNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
-	Author *author = db->getAuthorById(author_id);
-	vector<PaperAuthor*> paper_authors;
-	db->getPaperAuthorsByPaperId(paper_authors, paper_id);
-	vector<double> distances;
-
-	int count = 0;
-	int count2 = 0;
-	char lastname[96];
-	char lastname2[96];
-	if (author->name.length() > 0) {
-		for (size_t j = 0; j < author->name.length(); j++){
-			if (author->name[j] == NULL) {
-				lastname[count2] = NULL;
-				break;
-			}
-			else if (author->name[j] == ' ') count2 = 0;
-			else {
-				lastname[count2] = author->name[j];
-				count2++;
-			}
-		}
-	}
-	for (size_t i = 0; i < paper_authors.size(); i++){
-		Author *coauthor = db->getAuthorById(paper_authors[i]->author_id);
-		if (coauthor == NULL || author->id == coauthor->id){
-			continue;
-		}
-		if (author->name.length() > 0 && coauthor->name.length() > 0) {
-			count2 = 0;
-			for (size_t j = 0; j < coauthor->name.length(); j++){
-				if (coauthor->name[j] == NULL) {
-					lastname2[count2] = NULL;
-					break;
-				}
-				else if (coauthor->name[j] == ' ') count2 = 0;
-				else {
-					lastname2[count2] = coauthor->name[j];
-					count2++;
-				}
-			}
-			string name(lastname);
-			string name2(lastname2);
-			stringToLower(name);
-			stringToLower(name2);
-			distances.push_back(jaroDistance(name, name2));
-			count++;
-		}
-	}
-
-	if (count > 0){
-		return Feature(*max_element(distances.begin(), distances.end()));
-	}
-	else {
-		return Feature(MAGIC_NUMBER);
-	}
+	return generateAuthorCoauthorLastNameDistanceFeature(db, author_id, paper_id, jaroDistance, std::max_element);
 }
 
 void generateAuthorFeatures(DB *db, Dataset *dataset)

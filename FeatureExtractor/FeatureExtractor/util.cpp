@@ -1,6 +1,6 @@
 #include "util.h"
 
-unsigned int levenshteinDistance(const std::string& s1, const std::string& s2)
+double levenshteinDistance(const std::string& s1, const std::string& s2)
 {
 	const std::size_t len1 = s1.size(), len2 = s2.size();
 	std::vector<unsigned int> col(len2 + 1), prevCol(len2 + 1);
@@ -16,7 +16,7 @@ unsigned int levenshteinDistance(const std::string& s1, const std::string& s2)
 			col[j + 1] = std::min(std::min(prevCol[1 + j] + 1, col[j] + 1), prevCol[j] + (s1[i] == s2[j] ? 0 : 1) );
 		col.swap(prevCol);
 	}
-	return prevCol[len2];
+	return (double) prevCol[len2];
 }
 
 char *TrouverMatches(const char *txt, const int *bl)
