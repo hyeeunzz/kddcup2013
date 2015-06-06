@@ -120,7 +120,67 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 
 }
 
-//204. Difference between paper's publication year and mean publication year of author's papers
+//204. Count of the number of papers which have same conference id
+Feature generatePaperConferenceCountFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int count = 0;
+	int p_con = paper->conference_id;
+	if (p_con > 0){
+		int p_con2;
+		for (size_t i = 0; i < paper_authors.size(); i++){
+			PaperAuthor *author2 = paper_authors[i];
+			if (author2->paper_id != paper_id){
+				Paper *paper2 = db->getPaperById(author2->paper_id);
+				if (paper2 != NULL){
+					p_con2 = paper2->conference_id;
+					if (p_con == p_con2){
+						count++;
+					}
+				}
+			}
+		}
+		return Feature(count);
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
+//205. Count of the number of papers which have same journal id
+Feature generatePaperJournalCountFeature(DB *db, int author_id, int paper_id)
+{
+	Paper *paper = db->getPaperById(paper_id);
+	vector<PaperAuthor*> paper_authors;
+	db->getPaperAuthorsByAuthorId(paper_authors, author_id);
+
+	int count = 0;
+	int p_jrn = paper->journal_id;
+	if (p_jrn > 0){
+		int p_jrn2;
+		for (size_t i = 0; i < paper_authors.size(); i++){
+			PaperAuthor *author2 = paper_authors[i];
+			if (author2->paper_id != paper_id){
+				Paper *paper2 = db->getPaperById(author2->paper_id);
+				if (paper2 != NULL){
+					p_jrn2 = paper2->journal_id;
+					if (p_jrn == p_jrn2){
+						count++;
+					}
+				}
+			}
+		}
+		return Feature(count);
+	}
+	else {
+		return Feature(MAGIC_NUMBER);
+	}
+}
+
+//206. Difference between paper's publication year and mean publication year of author's papers
 Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -156,7 +216,7 @@ Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, i
 	}
 }
 
-//205. Difference between paper's publication year and mean publication year of coauthor's papers
+//207. Difference between paper's publication year and mean publication year of coauthor's papers
 Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -199,7 +259,7 @@ Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id,
 	}
 }
 
-// 206. Distance between major conference cluster and paper's conference cluster
+// 208. Distance between major conference cluster and paper's conference cluster
 Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
@@ -240,7 +300,7 @@ Feature generateConferenceClusterFeature(DB *db, int author_id, int paper_id)
 	}
 }
 
-// 207. Distance between major journal cluster and paper's journal cluster
+// 209. Distance between major journal cluster and paper's journal cluster
 Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *this_paper = db->getPaperById(paper_id);
@@ -281,7 +341,7 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 	}
 }
 
-//208. Levenshtein distance between paper's title and titles of author's papers
+//210. Levenshtein distance between paper's title and titles of author's papers
 Feature generatePaperTitleLevenshteinDstanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -312,7 +372,7 @@ Feature generatePaperTitleLevenshteinDstanceFeature(DB *db, int author_id, int p
 
 }
 
-//209. Jaro distance between paper's title and titles of author's papers
+//211. Jaro distance between paper's title and titles of author's papers
 Feature generatePaperTitleJaroDstanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -343,7 +403,7 @@ Feature generatePaperTitleJaroDstanceFeature(DB *db, int author_id, int paper_id
 
 }
 
-//210. Difference between paper's publication year and publication years of author's papers
+//212. Difference between paper's publication year and publication years of author's papers
 Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -374,7 +434,7 @@ Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int autho
 	}
 }
 
-//211. Gap of publication time of author's papers
+//213. Gap of publication time of author's papers
 Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -409,12 +469,14 @@ void generatePaperFeatures(DB *db, Dataset *dataset)
 	generateSingleFeature(db, dataset, 201, generatePaperPublicationTimeFeature);
 	generateSingleFeature(db, dataset, 202, generatePaperConferenceFeature);
 	generateSingleFeature(db, dataset, 203, generatePaperJournalFeature);
-	generateSingleFeature(db, dataset, 204, generateMeanPaperPublicationYearofAuthorFeature);
-	generateSingleFeature(db, dataset, 205, generateMeanPaperPublicationYearofCoauthorFeature);
-	generateSingleFeature(db, dataset, 206, generateConferenceClusterFeature);
-	generateSingleFeature(db, dataset, 207, generateJournalClusterFeature);
-	generateSingleFeature(db, dataset, 208, generatePaperTitleLevenshteinDstanceFeature);
-	generateSingleFeature(db, dataset, 209, generatePaperTitleJaroDstanceFeature);
-	generateSingleFeature(db, dataset, 210, generatePublicationYearDifferenceofAuthorPapersFeature);
-	generateSingleFeature(db, dataset, 211, generatePaperPublicationTimeGapFeature);
+	generateSingleFeature(db, dataset, 204, generatePaperConferenceCountFeature);
+	generateSingleFeature(db, dataset, 205, generatePaperJournalCountFeature);
+	generateSingleFeature(db, dataset, 206, generateMeanPaperPublicationYearofAuthorFeature);
+	generateSingleFeature(db, dataset, 207, generateMeanPaperPublicationYearofCoauthorFeature);
+	generateSingleFeature(db, dataset, 208, generateConferenceClusterFeature);
+	generateSingleFeature(db, dataset, 209, generateJournalClusterFeature);
+	generateSingleFeature(db, dataset, 210, generatePaperTitleLevenshteinDstanceFeature);
+	generateSingleFeature(db, dataset, 211, generatePaperTitleJaroDstanceFeature);
+	generateSingleFeature(db, dataset, 212, generatePublicationYearDifferenceofAuthorPapersFeature);
+	generateSingleFeature(db, dataset, 213, generatePaperPublicationTimeGapFeature);
 }
