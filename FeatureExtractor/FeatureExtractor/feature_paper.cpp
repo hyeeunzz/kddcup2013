@@ -28,7 +28,7 @@ void generatePaperDuplicateFeature(DB *db, Dataset *dataset)
 	}
 }
 
-// 201
+// 201. Check whether paper's publication time is in range of author's publication years
 Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -64,7 +64,7 @@ Feature generatePaperPublicationTimeFeature(DB *db, int author_id, int paper_id)
 }
 
 
-//202
+//202. Check whether paper's conference is equal to conference of author's other papers
 Feature generatePaperConferenceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -92,7 +92,7 @@ Feature generatePaperConferenceFeature(DB *db, int author_id, int paper_id)
 
 }
 
-//203
+//203. Check whether paper's journal is equal to journal of author's other papers
 Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -120,7 +120,7 @@ Feature generatePaperJournalFeature(DB *db, int author_id, int paper_id)
 
 }
 
-//204
+//204. Difference between paper's publication year and mean publication year of author's papers
 Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -156,7 +156,7 @@ Feature generateMeanPaperPublicationYearofAuthorFeature(DB *db, int author_id, i
 	}
 }
 
-//205
+//205. Difference between paper's publication year and mean publication year of coauthor's papers
 Feature generateMeanPaperPublicationYearofCoauthorFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -281,7 +281,7 @@ Feature generateJournalClusterFeature(DB *db, int author_id, int paper_id)
 	}
 }
 
-//208
+//208. Levenshtein distance between paper's title and titles of author's papers
 Feature generatePaperTitleLevenshteinDstanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -312,7 +312,7 @@ Feature generatePaperTitleLevenshteinDstanceFeature(DB *db, int author_id, int p
 
 }
 
-//209
+//209. Jaro distance between paper's title and titles of author's papers
 Feature generatePaperTitleJaroDstanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -343,7 +343,7 @@ Feature generatePaperTitleJaroDstanceFeature(DB *db, int author_id, int paper_id
 
 }
 
-//210
+//210. Difference between paper's publication year and publication years of author's papers
 Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
@@ -374,7 +374,7 @@ Feature generatePublicationYearDifferenceofAuthorPapersFeature(DB *db, int autho
 	}
 }
 
-//211
+//211. Gap of publication time of author's papers
 Feature generatePaperPublicationTimeGapFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);

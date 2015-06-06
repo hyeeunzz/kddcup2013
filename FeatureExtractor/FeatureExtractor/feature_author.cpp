@@ -202,7 +202,7 @@ Feature generateAuthorCoauthorNameLevstheinDistanceFeature(DB *db, int author_id
 	}
 }
 
-// 106
+// 106. Levsthein distance between abbreviations of author's name and coauthor's name
 Feature generateAuthorCoauthorAbbreviatedNameLevstheinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -340,7 +340,7 @@ Feature generateAuthorCoauthorLastNameLevestheinDistanceFeature(DB *db, int auth
 	}
 }
 
-//108
+//108. Total number of coathors of target author
 Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 {
 	vector<PaperAuthor*> paper_authors;
@@ -355,7 +355,7 @@ Feature generateTotalNumberofCoauthors(DB *db, int author_id, int paper_id)
 	return Feature(count);
 }
 
-//109
+//109. Average number of coauthor's papers
 Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -377,7 +377,7 @@ Feature generateAverageNumberofPapersofCoauthor(DB *db, int author_id, int paper
 	}
 }
 
-//110
+//110. The number of author's papers
 Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 {
 	vector<PaperAuthor*> paper_authors;
@@ -392,7 +392,7 @@ Feature generateNumberofPapersofAuthor(DB *db, int author_id, int paper_id)
 	return Feature(count);
 }
 
-// 111
+// 111. Jaro distance between author's affiliation and paper_author's affiliation
 Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -422,7 +422,7 @@ Feature generateAuthorAffiliationJaroDistanceFeature(DB *db, int author_id, int 
 	}
 }
 
-// 112
+// 112. Jaro distance between author's affiliation and coauthor's affiliation
 Feature generateCoauthorAffiliationJaroDistanceFeature(DB *db, int author_id, int paper_id){
 	vector<PaperAuthor*> paper_authors;
 	Author *author = db->getAuthorById(author_id);
@@ -453,7 +453,7 @@ Feature generateCoauthorAffiliationJaroDistanceFeature(DB *db, int author_id, in
 	}
 }
 
-// 113
+// 113. Jaro distance between author's name and paper_author's name
 Feature generateAuthorNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -483,7 +483,7 @@ Feature generateAuthorNameJaroDistanceFeature(DB *db, int author_id, int paper_i
 	}
 }
 
-// 114
+// 114. Jaro distance between abbrevation of author's name and paper_author's name
 Feature generateAuthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -558,7 +558,7 @@ Feature generateAuthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, 
 	}
 }
 
-// 115
+// 115. Jaro distance between author's name and coauthor's name
 Feature generateAuthorCoauthorNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -590,7 +590,7 @@ Feature generateAuthorCoauthorNameJaroDistanceFeature(DB *db, int author_id, int
 	}
 }
 
-// 116
+// 116. Jaro distance between abbreviations of author's name and coauthor's name
 Feature generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
@@ -668,7 +668,7 @@ Feature generateAuthorCoauthorAbbreviatedNameJaroDistanceFeature(DB *db, int aut
 	}
 }
 
-// 117
+// 117. Jaro distance between author's last name and coauthor's last name
 Feature generateAuthorCoauthorLastNameJaroDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Author *author = db->getAuthorById(author_id);
