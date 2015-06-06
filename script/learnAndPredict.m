@@ -3,7 +3,7 @@ function [ y1, y2, model ] = learnAndPredict( X, y, X2, method )
 %   Detailed explanation goes here
 %% Train
 tic;
-fprintf('Training... ');
+fprintf('Training(method %d)... ', method);
 if method == 0 %logistic regression
     model = glmfit(X, (y+1)/2, 'binomial', 'link', 'logit');
 elseif method == 1 % Decision tree
