@@ -464,7 +464,7 @@ Feature generatePaperJournalCountFeature(DB *db, int author_id, int paper_id)
 }
 
 //214. Levenshtein distance between paper's conference fullname and conference fullnames of target author
-Feature generateLevenshteinDistancePaperConferenceFullNameFeature(DB *db, int author_id, int paper_id)
+Feature generatePaperConferenceFullnameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -504,7 +504,7 @@ Feature generateLevenshteinDistancePaperConferenceFullNameFeature(DB *db, int au
 }
 
 //215. Levenshtein distance between paper's journal fullname and journal fullnames of target author
-Feature generateLevenshteinDistancePaperJournalFullNameFeature(DB *db, int author_id, int paper_id)
+Feature generatePaperJournalFullnameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -544,7 +544,7 @@ Feature generateLevenshteinDistancePaperJournalFullNameFeature(DB *db, int autho
 }
 
 //216. Levenshtein distance between paper's conference shortname and conference shortnames of target author
-Feature generateLevenshteinDistancePaperConferenceShortNameFeature(DB *db, int author_id, int paper_id)
+Feature generatePaperConferenceShortnameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -584,7 +584,7 @@ Feature generateLevenshteinDistancePaperConferenceShortNameFeature(DB *db, int a
 }
 
 //217. Levenshtein distance between paper's journal shortname and journal shortnames of target author
-Feature generateLevenshteinDistancePaperJournalShortNameFeature(DB *db, int author_id, int paper_id)
+Feature generatePaperJournalShortnameLevenshteinDistanceFeature(DB *db, int author_id, int paper_id)
 {
 	Paper *paper = db->getPaperById(paper_id);
 	vector<PaperAuthor*> paper_authors;
@@ -639,8 +639,8 @@ void generatePaperFeatures(DB *db, Dataset *dataset)
 	generateSingleFeature(db, dataset, 211, generatePaperPublicationTimeGapFeature);
 	generateSingleFeature(db, dataset, 212, generatePaperConferenceCountFeature);
 	generateSingleFeature(db, dataset, 213, generatePaperJournalCountFeature);
-	generateSingleFeature(db, dataset, 214, generateLevenshteinDistancePaperConferenceFullNameFeature);
-	generateSingleFeature(db, dataset, 215, generateLevenshteinDistancePaperJournalFullNameFeature);
-	generateSingleFeature(db, dataset, 216, generateLevenshteinDistancePaperConferenceShortNameFeature);
-	generateSingleFeature(db, dataset, 217, generateLevenshteinDistancePaperJournalShortNameFeature);
+	generateSingleFeature(db, dataset, 214, generatePaperConferenceFullnameLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 215, generatePaperJournalFullnameLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 216, generatePaperConferenceShortnameLevenshteinDistanceFeature);
+	generateSingleFeature(db, dataset, 217, generatePaperJournalShortnameLevenshteinDistanceFeature);
 }

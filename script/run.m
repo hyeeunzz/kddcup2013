@@ -2,7 +2,7 @@ FEATURE_EXTRACTOR_EXE_PATH = '..\FeatureExtractor\x64\Release\FeatureExtractor.e
 DATA_DIRECTORY = '..\data';
 
 %% Experimental settings..
-algorithm = 0;                    % 0: logistic regression, 1: decision tree, 2: kernel SVM, 3: KNN
+algorithm = 2;                    % 0: logistic regression, 1: decision tree, 2: kernel SVM, 3: KNN
 preprocessing_method = 'Z';       % Preprocessing method : 'Z' or 'minmax'
 postprocessing_critical = 0;      % Whether using critical feature as postprocessing or not
 feature_list = [101:117 200:217]; % Feature ids that will be used for training and prediction
