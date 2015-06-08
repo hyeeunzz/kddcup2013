@@ -13,6 +13,8 @@ elseif method == 2 % SVM (RBF kernel)
     model = fitcsvm(X,y,'KernelFunction','rbf','Standardize',true,'KernelScale','auto');
 elseif method == 3 % KNN
     model = fitcknn(X,y, 'NumNeighbors', 5);
+elseif method == 4 % SVM (linear kernel)
+    model = fitcsvm(X,y,'KernelFunction','linear','Standardize',true,'KernelScale','auto');
 else
     error('method error!');
 end
@@ -35,6 +37,9 @@ elseif method == 2 % SVM (RBF kernel)
     y1 = model.predict(X);
     y2 = model.predict(X2);
 elseif method == 3 %KNN
+    y1 = model.predict(X);
+    y2 = model.predict(X2);
+elseif method == 4 % SVM (linear kernel)
     y1 = model.predict(X);
     y2 = model.predict(X2);
 else
