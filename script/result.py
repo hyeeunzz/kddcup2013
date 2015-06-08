@@ -23,16 +23,17 @@ else:
     critical_flag = int(sys.argv[2])
     # read critical feature
     critical_dict = {}
-    datadir = '/'.join(re.split('\\\\|/', sys.argv[1])[:-1])
-    criticalFeaturePath = datadir + '/' + re.split('\\\\|/', sys.argv[1])[-1].split('.')[0] + '.feature.301.csv'
-    critical_f = open(criticalFeaturePath, 'r')
-    critical_f.readline()
-
-    for line in critical_f:
-        author_id = line.split(',')[0]
-        paper_id  = line.split(',')[1]
-        feature   = line.split(',')[2]
-        critical_dict[author_id + ',' + paper_id] = float(feature)
+    if critical_flag == 1:
+        datadir = '/'.join(re.split('\\\\|/', sys.argv[1])[:-1])
+        criticalFeaturePath = datadir + '/' + re.split('\\\\|/', sys.argv[1])[-1].split('.')[0] + '.feature.301.csv'
+        critical_f = open(criticalFeaturePath, 'r')
+        critical_f.readline()
+    
+        for line in critical_f:
+            author_id = line.split(',')[0]
+            paper_id  = line.split(',')[1]
+            feature   = line.split(',')[2]
+            critical_dict[author_id + ',' + paper_id] = float(feature)
 
     # start
 
