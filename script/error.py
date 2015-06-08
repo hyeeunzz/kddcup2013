@@ -52,7 +52,7 @@ else:
         total +=1
     errs.append(cnt/total)
     
-    print 'Error:',1-sum(errs)/len(errs)
+    print 'Correctness:',sum(errs)/len(errs)
     
     out.close()
     sol.close()
