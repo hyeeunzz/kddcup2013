@@ -1,0 +1,16 @@
+function [] = condor(pid)
+%RUN Summary of this function goes here
+%   Detailed explanation goes here
+
+%rng('shuffle');
+
+run(struct( ...
+'algorithm', 0, ...
+'preprocessing_method', 'Z', ...
+'postprocessing_critical', 0, ...
+'feature_list', 102, ...
+'be', 0 ... % basis expansion
+));
+
+
+end

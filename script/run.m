@@ -1,6 +1,5 @@
 function [X,y,X2,y1,y2,model] = run(params)
-FEATURE_EXTRACTOR_EXE_PATH = '..\FeatureExtractor\x64\Release\FeatureExtractor.exe';
-DATA_DIRECTORY = '..\data';
+DATA_DIRECTORY = '../data';
 
 %% Experimental settings..
 algorithm = params.algorithm;                       % 0: logistic regression, 1: decision tree, 2: kernel SVM, 3: KNN
@@ -43,29 +42,36 @@ if be
     X2 = basis_expansion(X2);
 end
 
+sz = 235909;
+%sz = 10000;
+X = X(1:sz, :);
+y = y(1:sz, :);
+fprintf('train size : %d\n', size(X,1));
+
 %% Learn predict and output
+suffix = sprintf('predict.sz%d', sz);
 [y1, y2, model] = learnAndPredict(X, y, X2, algorithm);
 tic;
 fprintf('Training Output... ');
-fp_predict = fopen(sprintf('%s\\Train.predict.csv', DATA_DIRECTORY), 'w');
+fp_predict = fopen(sprintf('%s/Train.%s.csv', DATA_DIRECTORY, suffix), 'w');
 fprintf(fp_predict, 'author_id,paper_id,features\n');
-dlmwrite(sprintf('%s\\Train.predict.csv', DATA_DIRECTORY), [train_data(:,1:(size(train_data,2)-1)) y1], 'delimiter', ',', 'precision', 10, '-append');
+dlmwrite(sprintf('%s/Train.%s.csv', DATA_DIRECTORY, suffix), [train_data(1:sz,1:(size(train_data,2)-1)) y1], 'delimiter', ',', 'precision', 10, '-append');
 fprintf('%f s\n', toc);
 fclose(fp_predict);
 
 tic;
 fprintf('Valid Output... ');
-fp_predict = fopen(sprintf('%s\\Valid.predict.csv', DATA_DIRECTORY), 'w');
+fp_predict = fopen(sprintf('%s/Valid.%s.csv', DATA_DIRECTORY, suffix), 'w');
 fprintf(fp_predict, 'author_id,paper_id,features\n');
-dlmwrite(sprintf('%s\\Valid.predict.csv', DATA_DIRECTORY), [valid_data(:,1:(size(valid_data,2)-1)) y2], 'delimiter', ',', 'precision', 10, '-append');
+dlmwrite(sprintf('%s/Valid.%s.csv', DATA_DIRECTORY, suffix), [valid_data(:,1:(size(valid_data,2)-1)) y2], 'delimiter', ',', 'precision', 10, '-append');
 fprintf('%f s\n', toc);
 fclose(fp_predict);
 
 %% Unfold result and calculate MAP score
-system(sprintf('python ..\\script\\result.py ..\\data\\Train.predict.csv %d', postprocessing_critical));
-system(sprintf('python ..\\script\\result.py ..\\data\\Valid.predict.csv %d', postprocessing_critical));
-system('python ..\script\eval.py ..\data\Train.predict.result.csv ..\data\Train.csv');
-system('python ..\script\eval.py ..\data\Valid.predict.result.csv ..\data\ValidSolution.csv');
-system('python ..\script\error.py ..\data\Train.predict.csv ..\data\Train.csv');
-system('python ..\script\error.py ..\data\Valid.predict.csv ..\data\ValidSolution.csv');
+system(sprintf('python ../script/result.py ../data/Train.%s.csv %d', suffix, postprocessing_critical));
+system(sprintf('python ../script/result.py ../data/Valid.%s.csv %d', suffix, postprocessing_critical));
+system(sprintf('python ../script/eval.py ../data/Train.%s.result.csv ../data/Train.csv', suffix));
+system(sprintf('python ../script/eval.py ../data/Valid.%s.result.csv ../data/ValidSolution.csv', suffix));
+system(sprintf('python ../script/error.py ../data/Train.%s.csv ../data/Train%d.csv', suffix, sz));
+system(sprintf('python ../script/error.py ../data/Valid.%s.csv ../data/ValidSolution.csv', suffix));
 end

@@ -1,0 +1,25 @@
+universe=Vanilla
+#workspace=kddcup
+Executable=matRun.sh
+Arguments="condor($(Process));"
+#Input=matlab/condor.m
+transfer_input_files=basis_expansion.m, error.py, eval.py, go.m, learnAndPredict.m, loadData.m, loadFeature.m, preprocessing.m, result.py, run.m
+
+#requirements=(OpSys == "LINUX" && Arch == "X86_64" && Matlab == "true")
+requirements=(Machine=="c02"||Machine=="c03"||Machine=="c04"||Machine=="c05"||Machine=="c06"||Machine=="c07"||Machine=="c08"||Machine=="c09"||Machine=="c10"||Machine=="c11"||Machine=="c12"||Machine=="c13"||Machine=="c14"||Machine=="c15"||Machine=="c16"||Machine=="c17"||Machine=="c18")
+should_transfer_files=YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+#concurrency_limits = matlab
+#RequestMemory = 30720
+RequestMemory = 15360
+
+#notification=Complete
+#notify_user=test@gmail.com
+#Output=./condor/result/$(workspace)/results.output.$(process).out
+#Log=./condor/log/$(workspace)/results.log.$(process).out
+#Error=./condor/error/$(workspace)/results.error.$(process).out
+Output=./condor/results.output.$(process).out
+Log=./condor/results.log.$(process).out
+Error=./condor/results.error.$(process).out
+queue 1
+
